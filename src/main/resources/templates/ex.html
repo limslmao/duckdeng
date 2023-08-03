@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
 <h1>HTML DOM Events</h1>
 <h2>The onclick Event</h2>
@@ -9,10 +9,12 @@
 
 <button onclick="myFunction()">Click me</button>
 
+
+
 <p id="demo"></p>
 
 <!-- 引入 JavaScript 檔案 -->
-<script src="/js/ex.js"></script>
+<script th:src="@{/ex.js}"></script>
 
 </body>
 </html>
