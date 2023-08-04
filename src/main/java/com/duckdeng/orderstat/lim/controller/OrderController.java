@@ -17,7 +17,7 @@ public class OrderController {
 
     @GetMapping("/")
     public String redirectToHome(Model model) throws IOException {
-        return "ex";
+        return "duckHomePage";
     }
     //讀取菜單資料並輸出到網頁
     @GetMapping("/orderMenu")

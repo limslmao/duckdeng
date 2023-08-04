@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<header>
-    <!-- AdminLTE CSS檔案 -->
-<!--    <link rel="stylesheet" href="/css/adminlte.min.css">-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdminLTE 3 | Boxed Layout</title>
+
+    <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
-    <link rel="stylesheet" th:href="@{plugins/fontawesome-free/css/all.min.css}">
-    <link rel="stylesheet" th:href="@{/dist/css/adminlte.css}">
-<!--    <link rel="stylesheet" th:href="@{/dist/css/adminlte.css.map}">-->
-<!--    <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css}">-->
-<!--    <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css.map}">-->
-</header>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+</head>
 
 
 <body class="sidebar-mini layout-footer-fixed sidebar-open" style="height: auto;">
@@ -29,7 +31,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="../../index3.html" class="brand-link">
+        <a href="../" class="brand-link">
             <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
             <span class="brand-text font-weight-light">DuckDeng</span>
         </a>
@@ -65,11 +67,23 @@
                          with font-awesome or any other icon font library -->
 
                             <li class="nav-item">
-                                <a href="../layout/boxed.html" class="nav-link">
+                                <a href="../layout/orderQueryPage.html" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>訂單查詢</p>
                                 </a>
                             </li>
+                    <li class="nav-item">
+                        <a href="../layout/orderInsertPage.html" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>訂單輸入</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../layout/menuEditPage.html" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>菜單編輯</p>
+                        </a>
+                    </li>
 
                 </ul>
             </nav>
@@ -228,16 +242,13 @@
 
 
 <!-- 引入 JavaScript 檔案 -->
-<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/dist/js/adminlte.min.js}"></script>
-<!--<script th:src="@{/dist/js/demo.js"}></script>-->
-<script th:src="@{/ex.js}"></script>
-<!--<script th:src="@{/dist/js/adminlte.js}"></script>-->
-<!--<script th:src="@{/dist/js/adminlte.js.map}"></script>-->
-<!--<script th:src="@{/dist/js/adminlte.min.js.map}"></script>-->
-
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<script src="../../orderQueryPage.js"></script>
 
 <!-- AdminLTE App -->
 
