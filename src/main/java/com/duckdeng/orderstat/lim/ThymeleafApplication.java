@@ -19,31 +19,31 @@ public class ThymeleafApplication {
 
         SpringApplication.run(ThymeleafApplication.class, args);
 
-		try {
-			List<OrderItem> orderItems = testOrderIdDataReader();
-			List<OrderId> orderIds = testOrderIdWithDateReader();
+//		try {
+//			List<OrderItem> orderItems = testOrderIdDataReader();
+//			List<OrderId> orderIds = testOrderIdWithDateReader();
+//
+//			// 處理從 OrderItemDataReader 中讀取的 orderItems
+//			for (OrderItem orderItem : orderItems) {
+//				System.out.println(orderItem.getItemName() + " - " + orderItem.getUnitPrice());
+//			}
+//
+//			for (OrderId orderId : orderIds) {
+//				System.out.println(orderId);
+//			}
+//
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
-			// 處理從 OrderItemDataReader 中讀取的 orderItems
-			for (OrderItem orderItem : orderItems) {
-				System.out.println(orderItem.getItemName() + " - " + orderItem.getUnitPrice());
-			}
 
-			for (OrderId orderId : orderIds) {
-				System.out.println(orderId);
-			}
-
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-
-		OrderItemEntry orderItemEntry = new OrderItemEntry();
-		OrderItem order1 = new OrderItem("quanYaChopFry",590);
-		OrderItem order2 = new OrderItem("banYaChopFry",300);
-		OrderItem order3 = new OrderItem("banYaChopPlate",290);
-		System.out.println(order1.getItemName());
-		order1.getUnitPrice();
+//		OrderItemEntry orderItemEntry = new OrderItemEntry();
+//		OrderItem order1 = new OrderItem("quanYaChopFry",590);
+//		OrderItem order2 = new OrderItem("banYaChopFry",300);
+//		OrderItem order3 = new OrderItem("banYaChopPlate",290);
+//		System.out.println(order1.getItemName());
+//		order1.getUnitPrice();
 
     }
 
