@@ -5,9 +5,11 @@ import com.duckdeng.orderstat.lim.model.OrderItem;
 import com.duckdeng.orderstat.lim.repository.OrderIdWithAmountReader;
 import com.duckdeng.orderstat.lim.repository.OrderIdWithDateReader;
 import com.duckdeng.orderstat.lim.repository.OrderItemDataReader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,5 +46,17 @@ public class OrderController {
         List<OrderId> orderIdWithDateList = reader.readOrderItems();
         model.addAttribute("orderItems", orderIdWithDateList);
         return "orderIdWithDate";
+    }
+
+    @GetMapping("/searchOrderId")
+    public ResponseEntity<Boolean> checkOrderIdExist(@RequestParam("query") String orderId) throws IOException {
+        OrderIdWithAmountReader reader = new OrderIdWithAmountReader();
+        List<OrderItem> orderItems = reader.readOrderItems();
+        for (OrderItem orderItem : orderItems){
+            if(orderId.equals(orderItem.getItemName())){
+                return ResponseEntity.ok(true);
+            }
+        }
+        return ResponseEntity.ok(false);
     }
 }
