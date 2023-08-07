@@ -1,26 +1,11 @@
-function myFunction() {
-  document.getElementById("demo").innerHTML = "Hello World";
-  console.log("success")
+$(function(){
+});
+
+function contentHtmlInner() {
+       var newRow = $('<tr>');
+       newRow.append('<td>' + menuArr[0] + '</td>');
+       newRow.append('<td>' + menuArr[1] + '</td>');
+       newRow.append('<td><input class="custom-checkbox" type="checkbox"  ' + menuArr[2] + '></td>');
+       newRow.append('<td>' + menuArr[3] + '</td>');
+       $('#tableBody').append(newRow);
 }
-
- function changeContent(page) {
-            // Fetch the content for the selected page
-            fetch(page)
-                .then(response => response.text())
-                .then(data => {
-                    // Update the content wrapper with the new content
-                    document.getElementById('content-wrapper').innerHTML = data;
-                });
-        }
-
-        // Add event listeners to the side menu items
-        document.addEventListener('DOMContentLoaded', function() {
-            const sideMenuItems = document.querySelectorAll('.sidebar-menu a');
-            sideMenuItems.forEach(item => {
-                item.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const page = event.target.getAttribute('href');
-                    changeContent(page);
-                });
-            });
-        });

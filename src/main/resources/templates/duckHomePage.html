@@ -127,22 +127,6 @@
                         <label for="date">日期</label>
                         <input type="text" class="form-control" id="date" placeholder="請輸入日期(ex:20230803)">
                     </div>
-<!--                    <div class="form-group">-->
-<!--                        <label for="exampleInputFile">File input</label>-->
-<!--                        <div class="input-group">-->
-<!--                            <div class="custom-file">-->
-<!--                                <input type="file" class="custom-file-input" id="exampleInputFile">-->
-<!--                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>-->
-<!--                            </div>-->
-<!--                            <div class="input-group-append">-->
-<!--                                <span class="input-group-text">Upload</span>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="form-check">-->
-<!--                        <input type="checkbox" class="form-check-input" id="exampleCheck1">-->
-<!--                        <label class="form-check-label" for="exampleCheck1">Check me out</label>-->
-<!--                    </div>-->
                 </div>
                 <!-- /.card-body -->
 
@@ -152,70 +136,28 @@
             </form>
         </div>
 
-
-
-
-        <div class="card">
+        <div class="card card-success">
             <div class="card-header">
-                <h3 class="card-title">查詢結果</h3>
+                <h3 class="card-title">Duck VS Chicken</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body p-0">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th style="width: 10px">#</th>
-                        <th>訂單編號</th>
-                        <th>訂單內容</th>
-                        <th>訂單金額</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1.</td>
-                        <td>Update software</td>
-                        <td>
-                            <div class="progress progress-xs">
-                                <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-danger">55%</span></td>
-                    </tr>
-                    <tr>
-                        <td>2.</td>
-                        <td>Clean database</td>
-                        <td>
-                            <div class="progress progress-xs">
-                                <div class="progress-bar bg-warning" style="width: 70%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-warning">70%</span></td>
-                    </tr>
-                    <tr>
-                        <td>3.</td>
-                        <td>Cron job running</td>
-                        <td>
-                            <div class="progress progress-xs progress-striped active">
-                                <div class="progress-bar bg-primary" style="width: 30%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-primary">30%</span></td>
-                    </tr>
-                    <tr>
-                        <td>4.</td>
-                        <td>Fix and squish bugs</td>
-                        <td>
-                            <div class="progress progress-xs progress-striped active">
-                                <div class="progress-bar bg-success" style="width: 90%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">90%</span></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                    <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 708px;" width="1062" height="375" class="chartjs-render-monitor"></canvas>
+                </div>
             </div>
             <!-- /.card-body -->
         </div>
+
+
 
 
 
@@ -240,12 +182,14 @@
 
 
 <!-- 引入 JavaScript 檔案 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
 <!-- Bootstrap 4 -->
 <script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/dist/js/adminlte.min.js}"></script>
 <!--<script th:src="@{/dist/js/demo.js"}></script>-->
 <script th:src="@{/duckHomePage.js}"></script>
+
 <!--<script th:src="@{/dist/js/adminlte.js}"></script>-->
 <!--<script th:src="@{/dist/js/adminlte.js.map}"></script>-->
 <!--<script th:src="@{/dist/js/adminlte.min.js.map}"></script>-->

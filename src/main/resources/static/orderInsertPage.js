@@ -1,5 +1,5 @@
-
 $(function(){
+  newItemInputCreate()
   $('.spicy-checkbox').on('click', spicyCheckBox);
   insertDate();
   $('#orderMenu').on('click', function(event) {
@@ -60,6 +60,8 @@ function countAllSpend() {
 }
 function calculateSpend(count, spCount, basePrice, spPrice) {
     return (count * basePrice + spCount * spPrice) * 1;
+}
+function newItemInputCreate() {//有要用到再做
 }
 function orderFinish() {
 
