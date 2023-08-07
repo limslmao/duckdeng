@@ -101,119 +101,36 @@
                         <h1>菜單編輯功能</h1>
                     </div>
                     <div class="col-sm-6">
-<!--                        <ol class="breadcrumb float-sm-right">-->
-<!--                            <li class="breadcrumb-item"><a href="#">Home</a></li>-->
-<!--                            <li class="breadcrumb-item"><a href="#">Layout</a></li>-->
-<!--                            <li class="breadcrumb-item active">Fixed Footer Layout</li>-->
-<!--                        </ol>-->
                     </div>
                 </div>
             </div><!-- /.container-fluid -->
         </section>
 
         <!-- Main content -->
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">輸入查詢條件</h3>
-            </div>
-            <!-- /.card-header -->
-            <!-- form start -->
-            <form>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="orderId">訂單編號</label>
-                        <input type="text" class="form-control" id="orderId" placeholder="請輸入訂單編號">
-                    </div>
-                    <div class="form-group">
-                        <label for="date">日期</label>
-                        <input type="text" class="form-control" id="date" placeholder="請輸入日期(ex:20230803)">
-                    </div>
-<!--                    <div class="form-group">-->
-<!--                        <label for="exampleInputFile">File input</label>-->
-<!--                        <div class="input-group">-->
-<!--                            <div class="custom-file">-->
-<!--                                <input type="file" class="custom-file-input" id="exampleInputFile">-->
-<!--                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>-->
-<!--                            </div>-->
-<!--                            <div class="input-group-append">-->
-<!--                                <span class="input-group-text">Upload</span>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="form-check">-->
-<!--                        <input type="checkbox" class="form-check-input" id="exampleCheck1">-->
-<!--                        <label class="form-check-label" for="exampleCheck1">Check me out</label>-->
-<!--                    </div>-->
-                </div>
-                <!-- /.card-body -->
 
-                <div class="card-footer">
-                    <button  class="btn btn-primary">搜尋</button>
-                </div>
-            </form>
-        </div>
 
 
 
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">查詢結果</h3>
+                <h3 class="card-title">目前菜單</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body p-0">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th style="width: 10px">#</th>
-                        <th>訂單編號</th>
-                        <th>訂單內容</th>
-                        <th>訂單金額</th>
+                        <th>項目</th>
+                        <th>金額</th>
+                        <th>香鍋麻辣</th>
+                        <th>香鍋麻辣金額</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>1.</td>
-                        <td>Update software</td>
-                        <td>
-                            <div class="progress progress-xs">
-                                <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-danger">55%</span></td>
-                    </tr>
-                    <tr>
-                        <td>2.</td>
-                        <td>Clean database</td>
-                        <td>
-                            <div class="progress progress-xs">
-                                <div class="progress-bar bg-warning" style="width: 70%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-warning">70%</span></td>
-                    </tr>
-                    <tr>
-                        <td>3.</td>
-                        <td>Cron job running</td>
-                        <td>
-                            <div class="progress progress-xs progress-striped active">
-                                <div class="progress-bar bg-primary" style="width: 30%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-primary">30%</span></td>
-                    </tr>
-                    <tr>
-                        <td>4.</td>
-                        <td>Fix and squish bugs</td>
-                        <td>
-                            <div class="progress progress-xs progress-striped active">
-                                <div class="progress-bar bg-success" style="width: 90%"></div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">90%</span></td>
-                    </tr>
+                    <tbody id="tableBody">
                     </tbody>
                 </table>
+                <button class="btn btn-primary" id = "addItem">新增項目</button>
             </div>
             <!-- /.card-body -->
         </div>
@@ -249,6 +166,12 @@
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
 <script src="../../menuEditPage.js"></script>
+<style>
+.custom-checkbox {
+  transform: scale(1.5);
+  vertical-align: middle;
+}
+</style>
 
 
 <!-- AdminLTE App -->

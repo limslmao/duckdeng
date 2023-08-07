@@ -137,15 +137,15 @@
                                 <label>兩吃:</label>
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份/320" style="width: 100%;" id = "duckTwoCount">
                                     <input class="spicy-checkbox" type="checkbox" id = "duckTwoSpCheck" data-target="duckTwoSpCount">
-                                    <label class="form-check-label">香鍋麻辣</label>
-                                    <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/350" style="width: 100%;" id = duckTwoSpCount hidden="true">
+                                    <label for = "duckTwoSpCheck" class="form-check-label interactive">香鍋麻辣</label>
+                                    <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價30" style="width: 100%;" id = duckTwoSpCount hidden="true">
                             </div>
                             <div class="col-3">
                                 <label>剁炒:</label>
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份/300" style="width: 100%;" id = "duckSauteCount">
                                 <input class="spicy-checkbox" type="checkbox" id = "duckSauteSpCheck" data-target="duckSauteSpCount">
-                                <label class="form-check-label">香鍋麻辣</label>
-                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/320" style="width: 100%;" id = duckSauteSpCount hidden="true">
+                                <label for = "duckSauteSpCheck" class="form-check-label interactive">香鍋麻辣</label>
+                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價20" style="width: 100%;" id = duckSauteSpCount hidden="true">
                             </div>
                             <div class="col-3">
                                 <label>剁盤:</label>
@@ -163,22 +163,19 @@
                                 <label>兩吃:</label>
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份/600" style="width: 100%;" id = "duckTwoCount-full">
                                 <input class="spicy-checkbox" type="checkbox" id = "duckTwoSpCheck-full" data-target='duckTwoSpCount-full'>
-                                <label class="form-check-label">香鍋麻辣</label>
-                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/620" style="width: 100%;" id = duckTwoSpCount-full hidden="true">
+                                <label for = "duckTwoSpCheck-full" class="form-check-label interactive">香鍋麻辣</label>
+                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價20" style="width: 100%;" id = duckTwoSpCount-full hidden="true">
                             </div>
                             <div class="col-3">
                                 <label>剁炒:</label>
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份/590" style="width: 100%;" id = "duckSauteCount-full">
                                 <input class="spicy-checkbox" type="checkbox" id = "duckSauteSpCheck-full" data-target='duckSauteSpCount-full'>
-                                <label class="form-check-label">香鍋麻辣</label>
-                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/630" style="width: 100%;" id = duckSauteSpCount-full hidden="true">
+                                <label for = "duckSauteSpCheck-full" class="form-check-label interactive">香鍋麻辣</label>
+                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價40" style="width: 100%;" id = duckSauteSpCount-full hidden="true">
                             </div>
                             <div class="col-3">
                                 <label>剁盤:</label>
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份570" style="width: 100%;" id = duckCutCount-full>
-<!--                                <input class="spicy-checkbox" type="checkbox" id = "duckCutSpCheck-full" data-target='duckCutSpCount-full'>-->
-<!--                                <label class="form-check-label">香鍋麻辣</label>-->
-<!--                                <input type="text" class="form-control" placeholder="請輸入香鍋麻辣數量" style="width: 100%;" id = duckCutSpCount-full hidden="true">-->
                             </div>
                         </div>
                     </div>
@@ -193,11 +190,11 @@
                         <div class="row">
                             <div class="col-3">
                                 <label>一隻:</label>
-                                <input type="number" class="form-control" placeholder="請輸入數量 1份/450">
+                                <input type="number" class="form-control" placeholder="請輸入數量 1份/450" id = "chicken-full">
                             </div>
                             <div class="col-3">
                                 <label>半隻:</label>
-                                <input type="number" class="form-control" placeholder="請輸入數量 1份/230">
+                                <input type="number" class="form-control" placeholder="請輸入數量 1份/230" id = "chicken-half">
                             </div>
 
                         </div>
@@ -213,11 +210,11 @@
                         <div class="row">
                             <div class="col-3">
                                 <label>荷葉餅:</label>
-                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/30">
+                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/30" id = "cookie">
                             </div>
                             <div class="col-3">
                                 <label>甜麵醬:</label>
-                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/20">
+                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/20" id="sauce">
                             </div>
 
                         </div>
@@ -248,7 +245,7 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td><span id="totalCount">1000</span></td>
+                        <td><span id="totalCount">0</span></td>
                         <td><span><button id="orderFinish" class="btn btn-primary">結單</button></span></td>
                     </tr>
                     </tbody>
@@ -287,7 +284,11 @@
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
 <script src="../../orderInsertPage.js"></script>
-
+<style>
+  label.interactive {
+    cursor: pointer;
+  }
+</style>
 
 <!-- AdminLTE App -->
 
