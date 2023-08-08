@@ -6,16 +6,30 @@ import com.duckdeng.orderstat.lim.model.OrderItemEntry;
 import com.duckdeng.orderstat.lim.repository.OrderIdWithAmountReader;
 import com.duckdeng.orderstat.lim.repository.OrderIdWithDateReader;
 import com.duckdeng.orderstat.lim.repository.OrderItemDataReader;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
+import java.util.Objects;
 
 @SpringBootApplication
 public class ThymeleafApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        ClassLoader classLoader = ThymeleafApplication.class.getClassLoader();
+
+        File file = new File(Objects.requireNonNull(classLoader.getResource("serviceAccountKey.json")).getFile());
+
+        InputStream serviceAccount = new FileInputStream(file.getAbsolutePath());
+        FirebaseOptions options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseApp.initializeApp(options);
+        }
 
         SpringApplication.run(ThymeleafApplication.class, args);
 
@@ -47,7 +61,7 @@ public class ThymeleafApplication {
 
     }
 
-	//測試orderitem可以取excel內所有資料
+    //測試orderitem可以取excel內所有資料
     public static List<OrderItem> testOrderItemDataReader() throws IOException {
         OrderItemDataReader reader = new OrderItemDataReader();
         return reader.readOrderItems();
@@ -58,10 +72,10 @@ public class ThymeleafApplication {
         return reader.readOrderItems();
     }
 
-	public static List<OrderId> testOrderIdWithDateReader() throws IOException {
-		OrderIdWithDateReader reader = new OrderIdWithDateReader();
-		return reader.readOrderItems();
-	}
+    public static List<OrderId> testOrderIdWithDateReader() throws IOException {
+        OrderIdWithDateReader reader = new OrderIdWithDateReader();
+        return reader.readOrderItems();
+    }
 }
 
 // 模擬取得所有 OrderItem 的方法
