@@ -147,7 +147,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                    <button  class="btn btn-primary">搜尋</button>
+                    <button  class="btn btn-primary" id="searchOrder">搜尋</button>
                 </div>
             </form>
         </div>
@@ -249,6 +249,21 @@
 <!--<script th:src="@{/dist/js/adminlte.js}"></script>-->
 <!--<script th:src="@{/dist/js/adminlte.js.map}"></script>-->
 <!--<script th:src="@{/dist/js/adminlte.min.js.map}"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- 使用jQuery內的AJAX即時渲染網頁  -->
+<script>
+    $(document).ready(function(){
+        $("#searchOrder").click(function(){
+            $.get("/searchOrderId", {query: $("#orderId").val()}, function(data, status){
+                if (data) {
+                    $("#enterQueryValue").text("搜尋成功");
+                } else {
+                    $("#enterQueryValue").text("搜尋失敗");
+                }
+            });
+        });
+    });
+</script>
 
 
 <!-- AdminLTE App -->
