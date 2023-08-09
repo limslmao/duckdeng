@@ -1,5 +1,6 @@
 package com.duckdeng.orderstat.lim.service;
 
+import com.duckdeng.orderstat.lim.model.Order;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.model.OrderItems;
 import com.google.api.core.ApiFuture;
@@ -7,22 +8,37 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderDetailService {
-    public String createOrderDetail(OrderDetail orderDetail) throws ExecutionException, InterruptedException {
+    public Order createOrderDetail(OrderDetail orderDetail) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail").get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        //處理怎麼新增ID的字串
-        int newNumberOfDocuments = documents.size()+1;
-        String orderItemKey = String.format("%03d", newNumberOfDocuments);
 
-        ApiFuture<WriteResult> collectionApiFuture = dbFirestore.collection("orderDetail")
-                .document(orderItemKey).set(orderDetail);
-        return collectionApiFuture.get().getUpdateTime().toString();
+        Date today = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String datePart = dateFormat.format(today).substring(1);
+
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
+                .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
+                .whereLessThanOrEqualTo(FieldPath.documentId(),  datePart + "999").get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        int newNumberOfDocuments = documents.size() + 1;
+
+        String orderItemKey =  datePart + String.format("%03d", newNumberOfDocuments);
+        dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
+
+        Order order = new Order();
+        order.setOrderId(orderItemKey);
+        order.setOrderDetail(orderDetail);
+
+        return order;
     }
 
     public OrderDetail getOrderDetail(String orderDetailId) throws ExecutionException, InterruptedException {
@@ -36,6 +52,22 @@ public class OrderDetailService {
             return orderDetail;
         }
         return null;
+    }
+
+    public List<OrderDetail> getMultiOrderDetailByDate(String startDate, String endDate) throws ExecutionException, InterruptedException {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+
+        String startId = startDate.substring(1) + "001";
+        String endId = endDate.substring(1) + "999";
+
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
+                .whereGreaterThanOrEqualTo(FieldPath.documentId(), startId)
+                .whereLessThanOrEqualTo(FieldPath.documentId(), endId)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        return documents.stream().map(doc -> doc.toObject(OrderDetail.class)).collect(Collectors.toList());
     }
 
     public String updateOrderDetail(String orderDetailId, OrderDetail orderDetail) throws ExecutionException, InterruptedException {
