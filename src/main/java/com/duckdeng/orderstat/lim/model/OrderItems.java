@@ -8,7 +8,6 @@ import lombok.Setter;
 public class OrderItems {
     private String itemType;
     private String itemUnit;
-    private String orderName;
     private String note;
     private int price;
 }
