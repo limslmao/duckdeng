@@ -17,7 +17,7 @@ public class OrderItemsController {
         this.orderItemsService = orderItemsService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public String createOrderItems(@RequestBody OrderItems orderItems) throws ExecutionException, InterruptedException {
         return orderItemsService.createOrderItems(orderItems);
     }
