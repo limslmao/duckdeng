@@ -41,7 +41,7 @@ public class OrderDetailController {
 
     @GetMapping("/test")
     public ResponseEntity<String> testGetEndPoint() {
-        return ResponseEntity.ok("Test ok");
+        return ResponseEntity.ok("Test OrderDetailController ok");
     }
 
 }
