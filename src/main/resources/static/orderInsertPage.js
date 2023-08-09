@@ -50,7 +50,6 @@ function calculateSpend(quantity, spicyQuantity, price, spicyPrice) {
 function mapToOrderItem(key, value) {
    const enumValue = valueToDbConvert[key];
    orderItem[enumValue] = parseInt(value, 0);
-   console.log(enumValue)
 }
 function countAllSpend() {
     var full_d_two = $('#duckTwoCount-full').val();

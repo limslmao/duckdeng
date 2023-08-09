@@ -36,11 +36,22 @@ const orderConvert = {
   '013': '荷葉餅一份',
   '014': '甜麵醬一份'
 };
-var addItemClickCount = 0
-var menuArr =  ["全鴨兩吃","600","主食","650"]
+const formData = {
+    itemName: '',
+    itemPrice: '',
+    itemType: 'main',
+    itemIngred: 'chicken',
+    itemUnit: 'half',
+    itemCookMethod: '',
+    itemSpCheck: false
+};
+const menuAdd = {};
 $(function(){
     queryItem()
     $('#addItem').on('click', addMenuItem);
+    $(document).on('click', '.cancel-button', cancelAdd);
+    $(document).on('click', '.submit-button', submitAdd);
+
 });
 function queryItem() {
     for (const item of jsonEx.orderItems) {
@@ -57,11 +68,32 @@ function queryItem() {
     }
 }
 function addMenuItem() {
-    addItemClickCount++; // Increment the counter
+    $('#addItem').prop('disabled', true);
     var newRow = $('<tr>');
-    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName_' + addItemClickCount + '"></td>');
-    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項金額" id="itemPrice_' + addItemClickCount + '"></td>');
-    newRow.append('<td><input class="custom-checkbox" type="checkbox" id="itemSpCheck_' + addItemClickCount + '"></td>');
-    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入香鍋麻辣加購價" id="itemSpPrice_' + addItemClickCount + '"></td>');
+    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName"></td>');
+    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項金額" id="itemPrice"></td>');
+    newRow.append('<td><select class="form-control" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select></td>'); // Dropdown select for item type
+    newRow.append('<td><select class="form-control" id="itemIngred"><option value="chicken">鴨</option><option value="duck">雞</option></select></td>'); // Dropdown select for item type
+    newRow.append('<td><select class="form-control" id="itemUnit"><option value="half">半</option><option value="full">全</option></select></td>'); // Dropdown select for item type
+    newRow.append('<td><span id="itemCookMethod"> new </span></td>');
+    newRow.append('<td><input class="custom-checkbox" type="checkbox" id="itemSpCheck "></td>');
+    newRow.append('<td><div class="row"><div class="col3"><button class="btn btn-primary cancel-button">取消</button></div><div class="col"><button class="btn btn-primary submit-button">確定</button></div></div></td>');
     $('#tableBody').append(newRow);
+}
+function cancelAdd() {
+    $('#addItem').prop('disabled', false);
+    $(this).closest('tr').remove();
+}
+function submitAdd() {
+    $('#addItem').prop('disabled', false);
+    formData.itemName = $('#itemName').val();
+    formData.itemPrice = $('#itemPrice').val();
+    formData.itemType = $('#itemType').val();
+    formData.itemIngred = $('#itemIngred').val();
+    formData.itemUnit = $('#itemUnit').val();
+    formData.itemCookMethod = $('#itemCookMethod').text();
+    formData.itemSpCheck = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
+    const orderJsonString = JSON.stringify(formData);
+    console.log(orderJsonString);
+    location.reload()
 }
