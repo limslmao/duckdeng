@@ -32,7 +32,6 @@ function chart() {
             data: data_count_duck // Y 轴数据
         }]
     };
-
     // 配置选项
     var options = {
         responsive: true,
@@ -50,12 +49,10 @@ function chart() {
             }
         }
     };
-
     // 创建柱状图
     var barChart = new Chart(barChartCanvas, {
-        type: 'bar',
         data: data,
+        type: 'bar',
         options: options
     });
-
 }
