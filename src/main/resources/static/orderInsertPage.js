@@ -1,33 +1,18 @@
-class OrderClass {
-  constructor() {
-    this.enumValues = {
-      quanYaTwoEat: '001',
-      quanJiaTwoEatSpicy: '002',
-      banYaTwoEat: '003',
-      banYaTwoEatSpicy: '004',
-      quanYaChopFry: '005',
-      quanYaChopFrySpicy: '006',
-      banYaChopFry: '007',
-      banYaChopFrySpicy: '008',
-      quanYaChopPlate: '009',
-      banYaChopPlate: '010',
-      quanJiShouPaJi: '011',
-      banJiShouPaJi: '012',
-      heYeBing: '013',
-      tianMianJiang: '014'
-    };
-  }
-     getEnumKeyByValue(value) {
-          for (const key in this.enumValues) {
-            if (this.enumValues[key] === value) {
-              return key;
-            }
-          }
-          return null;
-        }
-        getEnumValueByKey(key) {
-          return this.enumValues[key] || null;
-        }
+const valueToDbConvert = {
+  'full_d_two'     :'001',
+  'full_d_two_sp'  :'002',
+  'half_d_two'     :'003',
+  'half_d_two_sp'  :'004',
+  'full_d_saute'   :'005',
+  'full_d_saute_sp':'006',
+  'half_d_saute'   :'007',
+  'half_d_saute_sp':'008',
+  'full_d_cut'     :'009',
+  'half_d_cut'     :'010',
+  'full_chicken'   :'011',
+  'half_chicken'   :'012',
+  'cookie'         :'013',
+  'sauce'          :'014'
 }
 const orderItem = {};
 var totalPrice = '';
@@ -63,9 +48,9 @@ function calculateSpend(quantity, spicyQuantity, price, spicyPrice) {
     return normalCost + spicyCost;
 }
 function mapToOrderItem(key, value) {
-   const orderClass = new OrderClass();
-   const enumValue = orderClass.getEnumValueByKey(key);
-   orderItem[enumValue] = value;
+   const enumValue = valueToDbConvert[key];
+   orderItem[enumValue] = parseInt(value, 0);
+   console.log(enumValue)
 }
 function countAllSpend() {
     var full_d_two = $('#duckTwoCount-full').val();
@@ -100,26 +85,24 @@ function countAllSpend() {
     $('#totalCount').text(duckSpend);
     totalPrice = duckSpend;
     // 將數據映射到 orderItem
-    mapToOrderItem('quanYaTwoEat', full_d_two);
-    mapToOrderItem('quanJiaTwoEatSpicy', full_d_two_sp);
-    mapToOrderItem('banYaTwoEat', half_d_two);
-    mapToOrderItem('banYaTwoEatSpicy', half_d_two_sp);
-    mapToOrderItem('quanYaChopFry', full_d_saute);
-    mapToOrderItem('quanYaChopFrySpicy', full_d_saute_sp);
-    mapToOrderItem('banYaChopFry', half_d_saute);
-    mapToOrderItem('banYaChopFrySpicy', half_d_saute_sp);
-    mapToOrderItem('quanYaChopPlate', full_d_cut);
-    mapToOrderItem('banYaChopPlate', half_d_cut);
-    mapToOrderItem('quanJiShouPaJi', full_chicken);
-    mapToOrderItem('banJiShouPaJi', half_chicken);
-    mapToOrderItem('heYeBing', cookie);
-    mapToOrderItem('tianMianJiang', sauce);
-
+    mapToOrderItem('full_d_two', full_d_two || 0);
+    mapToOrderItem('full_d_two_sp', full_d_two_sp || 0);
+    mapToOrderItem('half_d_two', half_d_two || 0);
+    mapToOrderItem('half_d_two_sp', half_d_two_sp || 0);
+    mapToOrderItem('full_d_saute', full_d_saute || 0);
+    mapToOrderItem('full_d_saute_sp', full_d_saute_sp || 0);
+    mapToOrderItem('half_d_saute', half_d_saute || 0);
+    mapToOrderItem('half_d_saute_sp', half_d_saute_sp || 0);
+    mapToOrderItem('full_d_cut', full_d_cut || 0);
+    mapToOrderItem('half_d_cut', half_d_cut || 0);
+    mapToOrderItem('full_chicken', full_chicken || 0);
+    mapToOrderItem('half_chicken', half_chicken || 0);
+    mapToOrderItem('cookie', cookie || 0);
+    mapToOrderItem('sauce', sauce || 0);
 }
 function newItemInputCreate() {//有要用到再做
 }
 function orderFinish() {
-
   const orderJson = {
      orderItem,
      totalPrice
