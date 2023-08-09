@@ -58,13 +58,17 @@ public class OrderDetailService {
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
         String startId = startDate.substring(1) + "001";
-        String endId = endDate.substring(1) + "999";
+        String endId;
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            endId = endDate.substring(1) + "999";
+        } else {
+            endId = startDate.substring(1) + "999";
+        }
 
         ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
                 .whereGreaterThanOrEqualTo(FieldPath.documentId(), startId)
                 .whereLessThanOrEqualTo(FieldPath.documentId(), endId)
                 .get();
-
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
         return documents.stream().map(doc -> doc.toObject(OrderDetail.class)).collect(Collectors.toList());

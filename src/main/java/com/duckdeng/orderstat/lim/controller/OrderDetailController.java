@@ -22,7 +22,7 @@ public class OrderDetailController {
         this.orderDetailService = orderDetailService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public Order createOrderDetail(@RequestBody OrderDetail orderDetail) throws ExecutionException, InterruptedException {
         return orderDetailService.createOrderDetail(orderDetail);
     }
@@ -33,7 +33,7 @@ public class OrderDetailController {
     }
 
     @GetMapping
-    public List<OrderDetail> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam String endDate) throws ExecutionException, InterruptedException {
+    public List<OrderDetail> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam(required = false) String endDate) throws ExecutionException, InterruptedException {
         return orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
     }
 
