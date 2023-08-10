@@ -38,8 +38,18 @@ public class OrderDetailController {
     }
 
     @GetMapping
-    public Map<String, List<OrderDetail>> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam(required = false) String endDate) throws ExecutionException, InterruptedException {
-        return orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
+    public ResponseEntity<?> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam(required = false) String endDate) {
+        try {
+            Map<String, List<OrderDetail>> result = orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
+            if (result.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No order details found for the given date range.");
+            }
+            return ResponseEntity.ok(result);
+        } catch (ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching order details.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input data.");
+        }
     }
 
     @PutMapping("/{orderDetailId}")
