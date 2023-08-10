@@ -1,8 +1,8 @@
 package com.duckdeng.orderstat.lim.controller;
 
-import com.duckdeng.orderstat.lim.model.Order;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.service.OrderDetailService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +21,15 @@ public class OrderDetailController {
     }
 
     @PostMapping
-    public Order createOrderDetail(@RequestBody OrderDetail orderDetail) throws ExecutionException, InterruptedException {
-        return orderDetailService.createOrderDetail(orderDetail);
+    public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetail orderDetail) {
+        try {
+            OrderDetail newOrderDetail = orderDetailService.createOrderDetail(orderDetail);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newOrderDetail);
+        } catch (ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order detail.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input data.");
+        }
     }
 
     @GetMapping("/{orderDetailId}")

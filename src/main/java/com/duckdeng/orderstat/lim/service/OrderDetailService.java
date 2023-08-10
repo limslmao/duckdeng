@@ -1,6 +1,5 @@
 package com.duckdeng.orderstat.lim.service;
 
-import com.duckdeng.orderstat.lim.model.Order;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -16,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrderDetailService {
-    public Order createOrderDetail(OrderDetail orderDetail) throws ExecutionException, InterruptedException {
+    public OrderDetail createOrderDetail(OrderDetail orderDetail) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
         Date today = new Date();
@@ -25,18 +24,15 @@ public class OrderDetailService {
 
         ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
                 .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
-                .whereLessThanOrEqualTo(FieldPath.documentId(),  datePart + "999").get();
+                .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999").get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         int newNumberOfDocuments = documents.size() + 1;
 
-        String orderItemKey =  datePart + String.format("%03d", newNumberOfDocuments);
+        String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
         dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
+        orderDetail.setOrderId(orderItemKey);
 
-        Order order = new Order();
-        order.setOrderId(orderItemKey);
-        order.setOrderDetail(orderDetail);
-
-        return order;
+        return orderDetail;
     }
 
     public OrderDetail getOrderDetail(String orderDetailId) throws ExecutionException, InterruptedException {
