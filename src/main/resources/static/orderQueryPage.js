@@ -85,7 +85,7 @@ var startDate = $('#startDate').val()||"20230810"
 var endDate = $('#endDate').val()||""
 $.ajax({
   type: 'GET',
-  url: '/orderDetails?startDate='+startDate+'&endDate='+endDate+' ',
+  url: '/api/orderDetails?startDate='+startDate+'&endDate='+endDate+' ',
   success: function(response) {
     $('#loading').attr('hidden', true);
     console.log('Response:', JSON.stringify(response, null, 2));
