@@ -72,8 +72,7 @@ public class OrderDetailService {
         String orderDetail = "orderDtl";
         List<OrderDetail> orderDetailList = documents.stream().map(this::addOrderId).toList();
 
-        Map<String, List<OrderDetail>> orderDetailMap = Collections.singletonMap(orderDetail, orderDetailList);
-        return orderDetailMap;
+        return Collections.singletonMap(orderDetail, orderDetailList);
     }
 
     public String updateOrderDetail(String orderDetailId, OrderDetail orderDetail) throws ExecutionException, InterruptedException {

@@ -6,7 +6,9 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -36,6 +38,16 @@ public class OrderItemsService {
         return null;
     }
 
+    public Map<String, List<OrderItems>> getAllOrderItems() throws ExecutionException, InterruptedException {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderItems").get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        String menuDetail = "menuDtl";
+        List<OrderItems> orderItemsList =  documents.stream().map(this::addItemId).toList();
+
+        return Collections.singletonMap(menuDetail, orderItemsList);
+    }
+
     public String updateOrderItems(String orderItemKey, OrderItems orderItems) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> collectionApiFuture = dbFirestore.collection("orderItems").document(orderItemKey).set(orderItems);
@@ -46,5 +58,11 @@ public class OrderItemsService {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderItems").document(orderItemKey).delete();
         return "Successfully deleted " + orderItemKey;
+    }
+
+    private OrderItems addItemId(QueryDocumentSnapshot document) {
+        OrderItems orderItems = document.toObject(OrderItems.class);
+        orderItems.setItemId(document.getId());
+        return orderItems;
     }
 }

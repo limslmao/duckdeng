@@ -5,6 +5,8 @@ import com.duckdeng.orderstat.lim.service.OrderItemsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -25,6 +27,11 @@ public class OrderItemsController {
     @GetMapping("/{orderItemKey}")
     public OrderItems getOrderItems(@PathVariable String orderItemKey) throws ExecutionException, InterruptedException {
         return orderItemsService.getOrderItems(orderItemKey);
+    }
+
+    @GetMapping
+    public Map<String, List<OrderItems>> getAllOrderItems() throws ExecutionException, InterruptedException {
+        return orderItemsService.getAllOrderItems();
     }
 
     @PutMapping("/{orderItemKey}")
