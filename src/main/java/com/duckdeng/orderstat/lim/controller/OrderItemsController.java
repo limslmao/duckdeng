@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/orderItems")
+@RequestMapping("/api/orderItems")
 public class OrderItemsController {
 
     public OrderItemsService orderItemsService;
