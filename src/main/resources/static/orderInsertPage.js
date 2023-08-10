@@ -109,4 +109,20 @@ function orderFinish() {
   }
   const orderJsonString = JSON.stringify(orderJson);
   console.log(orderJsonString);
+  postData(orderJsonString)
+}
+function postData(orderJsonString) {
+  $.ajax({
+    type: 'POST',
+    url: '/api/orderDetails', // 移除多餘的空格
+    data: orderJsonString, // 將 JSON 字串傳送至伺服器
+    contentType: 'application/json', // 設定 content type 為 JSON
+    success: function(response) {
+      $('#loading').attr('hidden', true);
+      console.log('Response:', JSON.stringify(response, null, 2));
+    },
+    error: function(xhr, status, error) {
+      console.log('Error:', error);
+    }
+  });
 }
