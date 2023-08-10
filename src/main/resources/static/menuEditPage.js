@@ -52,7 +52,7 @@ $(function(){
 function getData() {
     $.ajax({
       type: 'GET',
-      url: '/orderItems ',
+      url: '/api/orderItems ',
       success: function(response) {
         $('#loading').attr('hidden', true);
         console.log('Response:', JSON.stringify(response, null, 2));
@@ -117,7 +117,7 @@ function cancelItemAdd() {
     $('#createItem').remove();
 }
 function confirmItemAdd() {
-    insertDataForm.itemPrice = $('#itemPrice').val();
+    insertDataForm.price = $('#itemPrice').val();
     insertDataForm.itemType = $('#itemType').val();
     insertDataForm.itemIngred =$('#itemIngred').val();
     insertDataForm.itemUnit = $('#itemUnit').val();
@@ -129,19 +129,21 @@ function confirmItemAdd() {
     insertDataForm.note = $('#itemName').val();
     const orderJsonString = JSON.stringify(insertDataForm);
     console.log(orderJsonString);
+    postData(insertDataForm)
 }
 function postData() {
-//    $.ajax({
-//      type: 'GET',
-//      url: '/orderItems ',
-//      success: function(response) {
-//        $('#loading').attr('hidden', true);
-//        console.log('Response:', JSON.stringify(response, null, 2));
-//        initJson = response
-//        queryItem()
-//      },
-//      error: function(xhr, status, error) {
-//        console.log('Error:', error);
-//      }
-//    });
+      $.ajax({
+        type: 'POST',
+        url: '/api/orderItems', // 移除多餘的空格
+        data: insertDataForm, // 將 JSON 字串傳送至伺服器
+        contentType: 'application/json', // 設定 content type 為 JSON
+        success: function(response) {
+          $('#loading').attr('hidden', true);
+          console.log('Response:', JSON.stringify(response, null, 2));
+          $('#createItem').remove();
+        },
+        error: function(xhr, status, error) {
+          console.log('Error:', error);
+        }
+      });
 }
