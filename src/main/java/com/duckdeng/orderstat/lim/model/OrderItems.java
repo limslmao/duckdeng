@@ -9,6 +9,9 @@ public class OrderItems {
     private String itemId;
     private String itemType;
     private String itemUnit;
-    private String note;
+    private String itemIngred;
+    private String itemSpicy;
+    private String itemCookMethod;
     private int price;
+    private String note;
 }
