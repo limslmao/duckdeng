@@ -2,14 +2,12 @@ package com.duckdeng.orderstat.lim.controller;
 
 import com.duckdeng.orderstat.lim.model.Order;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
-import com.duckdeng.orderstat.lim.model.OrderItems;
 import com.duckdeng.orderstat.lim.service.OrderDetailService;
-import com.duckdeng.orderstat.lim.service.OrderItemsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -33,7 +31,7 @@ public class OrderDetailController {
     }
 
     @GetMapping
-    public List<OrderDetail> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam(required = false) String endDate) throws ExecutionException, InterruptedException {
+    public Map<String, List<OrderDetail>> getMultiOrderDetailByDate(@RequestParam String startDate, @RequestParam(required = false) String endDate) throws ExecutionException, InterruptedException {
         return orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
     }
 

@@ -2,19 +2,17 @@ package com.duckdeng.orderstat.lim.service;
 
 import com.duckdeng.orderstat.lim.model.Order;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
-import com.duckdeng.orderstat.lim.model.OrderItems;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderDetailService {
@@ -54,7 +52,7 @@ public class OrderDetailService {
         return null;
     }
 
-    public List<OrderDetail> getMultiOrderDetailByDate(String startDate, String endDate) throws ExecutionException, InterruptedException {
+    public Map<String, List<OrderDetail>> getMultiOrderDetailByDate(String startDate, String endDate) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
         String startId = startDate.substring(1) + "001";
@@ -71,7 +69,11 @@ public class OrderDetailService {
                 .get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
-        return documents.stream().map(doc -> doc.toObject(OrderDetail.class)).collect(Collectors.toList());
+        String orderDetail = "orderDtl";
+        List<OrderDetail> orderDetailList = documents.stream().map(this::addOrderId).toList();
+
+        Map<String, List<OrderDetail>> orderDetailMap = Collections.singletonMap(orderDetail, orderDetailList);
+        return orderDetailMap;
     }
 
     public String updateOrderDetail(String orderDetailId, OrderDetail orderDetail) throws ExecutionException, InterruptedException {
@@ -84,5 +86,11 @@ public class OrderDetailService {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderDetail").document(orderDetailId).delete();
         return "Successfully deleted " + orderDetailId;
+    }
+
+    private OrderDetail addOrderId(QueryDocumentSnapshot document) {
+        OrderDetail detail = document.toObject(OrderDetail.class);
+        detail.setOrderId(document.getId());
+        return detail;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class OrderDetail {
+    private String orderId;
     private Map<String, Integer> orderItem;
     private int totalAmount;
 }
