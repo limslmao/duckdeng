@@ -116,29 +116,36 @@
             <!-- form start -->
             <form>
                 <div class="card-body">
+<!--                    <div class="form-group">-->
+<!--                        <label for="orderId">訂單編號</label>-->
+<!--                        <input type="text" class="form-control" id="orderId" placeholder="請輸入訂單編號">-->
+<!--                    </div>-->
                     <div class="form-group">
-                        <label for="orderId">訂單編號</label>
-                        <input type="text" class="form-control" id="orderId" placeholder="請輸入訂單編號">
+                        <label for="startDate">起始日期</label>
+                        <input type="text" class="form-control" id="startDate" placeholder="請輸入日期(ex:20230803)">
                     </div>
                     <div class="form-group">
-                        <label for="date">日期</label>
-                        <input type="text" class="form-control" id="date" placeholder="請輸入日期(ex:20230803)">
+                        <label for="endDate">終止日期</label>
+                        <input type="text" class="form-control" id="endDate" placeholder="請輸入日期(ex:20230803)">
+                    </div>
+                    <div class="form-group">
+                        <label >快捷鍵</label><br>
+                        <button  class="date-btn btn btn-primary" id = 'today'>今天</button>
+                        <button  class="date-btn btn btn-primary" id = 'yesterday'>昨天</button>
+                        <button  class="date-btn btn btn-primary" id = 'thisWeek'>這禮拜</button>
                     </div>
                 </div>
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                    <button  class="btn btn-primary">搜尋</button>
+                    <button  class="btn btn-primary" id = 'search'>搜尋</button>
                 </div>
             </form>
         </div>
-
-
-
-
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">查詢結果</h3>
+                <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" hidden="true" id = "loading">
             </div>
             <!-- /.card-header -->
             <div class="card-body p-0">
