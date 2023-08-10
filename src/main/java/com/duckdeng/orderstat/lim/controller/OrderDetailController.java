@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/orderDetails")
+@RequestMapping("/api/orderDetails")
 public class OrderDetailController {
 
     public OrderDetailService orderDetailService;
