@@ -99,6 +99,7 @@ function countAllSpend() {
     mapToOrderItem('half_chicken', half_chicken || 0);
     mapToOrderItem('cookie', cookie || 0);
     mapToOrderItem('sauce', sauce || 0);
+    $('#orderFinish').prop('disabled', false);
 }
 function newItemInputCreate() {//有要用到再做
 }
@@ -112,6 +113,8 @@ function orderFinish() {
   postData(orderJsonString)
 }
 function postData(orderJsonString) {
+  $('#loading').attr('hidden', false);
+  $('#orderFinish').attr('disabled', true);
   $.ajax({
     type: 'POST',
     url: '/api/orderDetails', // 移除多餘的空格
@@ -120,6 +123,8 @@ function postData(orderJsonString) {
     success: function(response) {
       $('#loading').attr('hidden', true);
       console.log('Response:', JSON.stringify(response, null, 2));
+      alert('訂單 '+response.orderId+' 新增成功')
+      location.reload();
     },
     error: function(xhr, status, error) {
       console.log('Error:', error);

@@ -22,22 +22,6 @@ let initJson = {
                    }
                  ]
                }
-const orderConvert = {
-  '001': '全鴨二吃',
-  '002': '全鴨二吃香鍋麻辣',
-  '003': '半鴨二吃',
-  '004': '半鴨二吃香鍋麻辣',
-  '005': '全鴨剁炒',
-  '006': '全鴨剁炒香鍋麻辣',
-  '007': '半鴨剁炒',
-  '008': '半鴨剁炒香鍋麻辣',
-  '009': '全鴨剁盤',
-  '010': '半鴨剁盤',
-  '011': '手扒雞一隻',
-  '012': '手扒雞半隻',
-  '013': '荷葉餅一份',
-  '014': '甜麵醬一份'
-};
 const insertDataForm = {}
 $(function(){
     getData()
@@ -55,9 +39,10 @@ function getData() {
       url: '/api/orderItems ',
       success: function(response) {
         $('#loading').attr('hidden', true);
-        console.log('Response:', JSON.stringify(response, null, 2));
+//        console.log('Response:', JSON.stringify(response, null, 2));
         initJson = response
         queryItem()
+        $('#addItem').prop('disabled', false);
       },
       error: function(xhr, status, error) {
         console.log('Error:', error);
@@ -82,7 +67,7 @@ function addMenuItem() {
     $('#addItem').prop('disabled', true);
     var newRow = $('<tr id="createItem">');
     newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName"></td>');
-    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項金額" id="itemPrice"></td>');
+    newRow.append('<td><input type="number" class="form-control" placeholder="請輸入品項金額" id="itemPrice"></td>');
     var itemTypeSelect = $('<select class="form-select" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select>');
     var itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
     var itemUnitSelect = $('<select class="form-select" id="itemUnit"><option value="half">半隻</option><option value="full">全隻</option></select>');
@@ -117,33 +102,36 @@ function cancelItemAdd() {
     $('#createItem').remove();
 }
 function confirmItemAdd() {
-    insertDataForm.price = $('#itemPrice').val();
+    insertDataForm.price = parseFloat($('#itemPrice').val());
     insertDataForm.itemType = $('#itemType').val();
     insertDataForm.itemIngred =$('#itemIngred').val();
     insertDataForm.itemUnit = $('#itemUnit').val();
     insertDataForm.itemCookMethod = $('#itemCookMethod').val();
-    insertDataForm.itemSpCheck = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
+    insertDataForm.itemSpicy = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
     if (insertDataForm.itemType == "add") {
-        insertDataForm.itemSpCheck = null
+        insertDataForm.itemSpicy = null
     }
     insertDataForm.note = $('#itemName').val();
     const orderJsonString = JSON.stringify(insertDataForm);
     console.log(orderJsonString);
-    postData(insertDataForm)
+    postData(orderJsonString)
 }
-function postData() {
-      $.ajax({
-        type: 'POST',
-        url: '/api/orderItems', // 移除多餘的空格
-        data: insertDataForm, // 將 JSON 字串傳送至伺服器
-        contentType: 'application/json', // 設定 content type 為 JSON
-        success: function(response) {
-          $('#loading').attr('hidden', true);
-          console.log('Response:', JSON.stringify(response, null, 2));
-          $('#createItem').remove();
-        },
-        error: function(xhr, status, error) {
-          console.log('Error:', error);
-        }
-      });
+function postData(orderJsonString) {
+    $('#loading').attr('hidden', false);
+    $.ajax({
+      type: 'POST',
+      url: '/api/orderItems', // 移除多餘的空格
+      data: orderJsonString, // 將 JSON 字串傳送至伺服器
+      contentType: 'application/json', // 設定 content type 為 JSON
+      success: function(response) {
+        $('#loading').attr('hidden', true);
+        console.log('Response:', JSON.stringify(response, null, 2));
+        $('#createItem').remove();
+        alert('菜單新增成功')
+        location.reload();
+      },
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
+      }
+    });
 }

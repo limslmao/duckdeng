@@ -116,10 +116,7 @@
             <!-- form start -->
             <form>
                     <div class="form-group">
-                        <div class="form-group">
-                            <label for="orderId">單號</label>
-                            <input type="text" class="form-control" id="orderId" placeholder="自動產生..">
-                        </div>
+
                         <label for="date">日期</label>
                         <input type="text" class="form-control" id="date" >
                     </div>
@@ -233,7 +230,7 @@
 
 
                 <div class="card-footer">
-                    <button  class="btn btn-primary" id = 'orderMenu'>點餐</button>
+                    <button  class="btn btn-primary" id = 'orderMenu' >點餐</button>
                 </div>
             </form>
         </div>
@@ -244,6 +241,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">點餐結果</h3>
+                <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" id = "loading" hidden="true">
             </div>
             <!-- /.card-header -->
             <div class="card-body p-0">
@@ -256,7 +254,7 @@
                     <tbody>
                     <tr>
                         <td><span id="totalCount">0</span></td>
-                        <td><span><button id="orderFinish" class="btn btn-primary">結單</button></span></td>
+                        <td><span><button id="orderFinish" class="btn btn-primary" disabled = 'true'>結單</button></span></td>
                     </tr>
                     </tbody>
                 </table>
