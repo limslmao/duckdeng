@@ -84,6 +84,7 @@ function countAllSpend() {
                     calculateSpend(sauce, 0, 20, 0);
     $('#totalCount').text(duckSpend);
     totalPrice = duckSpend;
+   $('#orderFinish').prop('disabled', totalPrice != 0 ? false : true);
     // 將數據映射到 orderItem
     mapToOrderItem('full_d_two', full_d_two || 0);
     mapToOrderItem('full_d_two_sp', full_d_two_sp || 0);
@@ -99,7 +100,6 @@ function countAllSpend() {
     mapToOrderItem('half_chicken', half_chicken || 0);
     mapToOrderItem('cookie', cookie || 0);
     mapToOrderItem('sauce', sauce || 0);
-    $('#orderFinish').prop('disabled', false);
 }
 function newItemInputCreate() {//有要用到再做
 }
