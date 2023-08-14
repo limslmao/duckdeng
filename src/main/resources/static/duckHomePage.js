@@ -1,19 +1,20 @@
-
+cardCreateCount = 0
 $(function(){
-//    chart()
+  $('.cleanBtn').click(function() {
+   var canvasId = $(this).closest('.card').find('canvas').attr('id');
+   console.log(canvasId)
+   chartClean(canvasId)
+  });
   $('#createSheet').on('click', function(event) {
-
-    event.preventDefault(); // Prevent the default link navigation
-    getData()
-//    chart(); // Call your function
+    event.preventDefault();
+    cardCreate()
+    getData();
   });
   $('#dateRange').on('change', function(event) {
       event.preventDefault(); // Prevent the default link navigation
       updateDateRangeText(); // Call your function
     });
-
 });
-
 const dataForCondition = {//給他的
      startDate: "20230211",
      endDate: "20230811",
@@ -131,7 +132,6 @@ function formatDateToYYYYMMDD(date) {
     var day = date.getDate().toString().padStart(2, '0');
     return year  + month  + day;
 }
-
 function getData() {
     dateRange = $('#dateRange').val();
     dateType = $('#dateType').val();
@@ -142,7 +142,6 @@ function getData() {
     dataForCondition.type = dateType;
     console.log(dataForCondition);
 //ajax input dataForCondition...
-
     var countDtl = dataForResponse.countDtl;
     var dataKey = dataForResponse.dataType;
     var dataX = [];
@@ -155,36 +154,16 @@ function getData() {
         }
         dataCounts.push(countData);
     }
-    var nullBarChartCount = searchNullCanvas()
-    console.log("nullBarChartCount:"+nullBarChartCount)
-    if (nullBarChartCount) {
-        chart(dataX, dataCounts, dataKey,nullBarChartCount);
-    }
-
+        chart(dataX, dataCounts, dataKey);
 }
-
-
-
-function searchNullCanvas() {
-    return false;
-    for (var i = 1; i <= 3; i++) {
-        var styleAttribute = $('#barChart-' + i).attr('style'); ///要找出如何判斷是否有插入圖表的QUERY
-        if (styleAttribute && styleAttribute.includes('box-sizing')) {
-        } else {
-        return i;
-        }
-    }
-    alert("請刪除一個項目")
-    return null
-}
-function chart(dataX, dataCounts, dataKey, nullBarChartCount) {
-    var barChartCanvas = $('#barChart-' + nullBarChartCount).get(0).getContext('2d');
+function chart(dataX, dataCounts, dataKey) {
+    var barChartCanvas = $('#barChart-' + cardCreateCount).get(0).getContext('2d');
     var axisX = dataX;
     var datasets = [];
-
+    var tittle = ""
     for (var i = 0; i < dataKey.length; i++) {
+        tittle += dataKey[i] + (i === dataKey.length - 1 ? "" : ",");
         var color = `rgba(${(i * 47) % 255}, ${(i * 71) % 255}, ${(i * 113) % 255}, 0.9)`;
-
         datasets.push({
             label: dataKey[i],
             backgroundColor: color,
@@ -197,12 +176,11 @@ function chart(dataX, dataCounts, dataKey, nullBarChartCount) {
             data: dataCounts.map(countData => countData[i])
         });
     }
-
+    $('#title-' + cardCreateCount).text(tittle)
     var data = {
         labels: axisX,
         datasets: datasets
     };
-
     var options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -219,10 +197,34 @@ function chart(dataX, dataCounts, dataKey, nullBarChartCount) {
             }
         }
     };
-
     var barChart = new Chart(barChartCanvas, {
         data: data,
         type: 'bar',
         options: options
     });
+}
+function cardCreate() {
+    cardCreateCount ++
+    var cardHtml = $('<div class="card card-success">'); // 创建一个包含 card 样式的 div 元素
+    // 创建 card-header 部分
+    var cardHeader = $('<div class="card-header">');
+    var cardTitle = $('<h3 class="card-title" id="title-'+cardCreateCount+'">等待搜尋中...</h3>');
+    var cardTools = $('<div class="card-tools">');
+    var collapseButton = $('<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>');
+    var cleanButton = $('<button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>');
+    cardTools.append(collapseButton);
+    cardTools.append(cleanButton);
+    cardHeader.append(cardTitle);
+    cardHeader.append(cardTools);
+    // 创建 card-body 部分
+    var cardBody = $('<div class="card-body">');
+    var chartContainer = $('<div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div></div></div><div class="chartjs-size-monitor-shrink"><div></div></div></div>');
+    var canvas = $('<canvas id="barChart-'+cardCreateCount+'" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 708px;" width="1062" height="375" class="chartjs-render-monitor"></canvas>');
+    chartContainer.append(canvas);
+    cardBody.append(chartContainer);
+    // 将所有部分添加到 cardHtml 中
+    cardHtml.append(cardHeader);
+    cardHtml.append(cardBody);
+    // 将 cardHtml 添加到页面中，例如一个容器元素
+    $('#cardAutoCreate').append(cardHtml);
 }
