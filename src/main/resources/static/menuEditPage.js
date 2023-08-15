@@ -1,7 +1,6 @@
 let initJson = {
                  "menuDtl": [
                    {
-                     "itemId": "001",
                      "price":600,
                      "itemType":"main",
                      "itemIngred":"duck",
@@ -11,7 +10,6 @@ let initJson = {
                      "note": "全鴨二吃"
                    },
                     {
-                     "itemId": "002",
                      "price":650,
                      "itemType":"main",
                      "itemIngred":"duck",
