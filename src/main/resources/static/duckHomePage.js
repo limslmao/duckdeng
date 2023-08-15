@@ -1,10 +1,5 @@
 cardCreateCount = 0
 $(function(){
-  $('.cleanBtn').click(function() {
-   var canvasId = $(this).closest('.card').find('canvas').attr('id');
-   console.log(canvasId)
-   chartClean(canvasId)
-  });
   $('#createSheet').on('click', function(event) {
     event.preventDefault();
     cardCreate()
@@ -15,6 +10,18 @@ $(function(){
       updateDateRangeText(); // Call your function
     });
 });
+const orderConvert = {
+  'duck': '鴨',
+  'chicken': '雞',
+  'full': '全隻',
+  'half': '半隻',
+  'N': '無香鍋',
+  'Y': '有香鍋麻辣',
+  'two': '兩吃',
+  'saute': '剁炒',
+  'cut': '剁盤',
+  'hand': '手扒'
+};
 const dataForCondition = {//給他的
      startDate: "20230211",
      endDate: "20230811",
@@ -22,62 +29,77 @@ const dataForCondition = {//給他的
      type: "itemIngred"//itemIngred itemUnit itemCookMethod itemSpicy
 }
 const dataForResponse = {
-   dataType:["duck","chicken"],
    rangeType:"week",
    countDtl: [
      {
        range:"Jan-1",
        count: {
-         duck: 100,
-         chicken: 100
+         two: 100,
+         saute : 100,
+         cut:80,
+         hand:50
        }
      },
      {
        range:"Jan-2",
        count: {
-         duck: 120,
-         chicken: 80
+         two: 100,
+         saute : 180,
+         cut:90,
+         hand:50
        }
      },
      {
        range:"Jan-3",
        count: {
-         duck: 90,
-         chicken: 80
+         two: 100,
+         saute : 100,
+         cut:89,
+         hand:80
        }
      },
      {
        range:"Jan-4",
        count: {
-         duck: 14,
-         chicken: 80
+         two: 90,
+         saute : 100,
+         cut:50,
+         hand:50
        }
      },
      {
        range:"Feb-1",
        count: {
-         duck: 13,
-         chicken: 80
+        two: 100,
+        saute : 100,
+        cut:80,
+        hand:50
        }
      },
      {
        range:"Feb-2",
        count: {
-         duck: 10,
-         chicken: 80
+         two: 100,
+         saute : 100,
+         cut:80,
+         hand:50
        }
      },
      {
        range:"Feb-3",
        count: {
-         duck: 11,
-         chicken: 80
+         two: 100,
+         saute : 100,
+         cut:80,
+         hand:50
        }
      }
    ],
    totalCount: {
-     duck: 220,
-     chicken: 180
+     two: 1000,
+     saute : 1000,
+     cut:800,
+     hand:500
    }
 }
 function updateDateRangeText() {
@@ -143,9 +165,11 @@ function getData() {
     console.log(dataForCondition);
 //ajax input dataForCondition...
     var countDtl = dataForResponse.countDtl;
-    var dataKey = dataForResponse.dataType;
+    var countObject = dataForResponse.countDtl[0].count; // 获取 count 对象
+    var dataKey = Object.keys(countObject); // 获取 count 对象的所有键
     var dataX = [];
     var dataCounts = [];
+    var dataPerson = [];
     for (var i = 0; i < countDtl.length; i++) {
         dataX.push(countDtl[i].range);
         var countData = [];
@@ -154,18 +178,40 @@ function getData() {
         }
         dataCounts.push(countData);
     }
-        chart(dataX, dataCounts, dataKey);
+
+    dataPerson = calculatePerson(dataCounts)
+    chart(dataX, dataCounts, dataKey, dataPerson);
 }
-function chart(dataX, dataCounts, dataKey) {
+function calculatePerson(dataCounts) {
+      var dataPerson = [];
+      var personData = [];
+      var sum = 0;
+      var value = 0;
+      for(var i = 0; i < dataCounts.length; i++) {
+        personData = [];
+        sum = 0
+        value = 0;
+        for(var j = 0; j < dataCounts[i].length; j++) {
+          sum += dataCounts[i][j]
+        }
+        for(var z = 0; z < dataCounts[i].length; z++) {
+            value =  Math.round((dataCounts[i][z]/sum) *100)
+            personData.push(value)
+        }
+        dataPerson.push(personData)
+      }
+      return dataPerson
+}
+function chart(dataX, dataCounts, dataKey, dataPerson) {
     var barChartCanvas = $('#barChart-' + cardCreateCount).get(0).getContext('2d');
     var axisX = dataX;
     var datasets = [];
     var tittle = ""
     for (var i = 0; i < dataKey.length; i++) {
-        tittle += dataKey[i] + (i === dataKey.length - 1 ? "" : ",");
+        tittle += orderConvert[dataKey[i]] + (i === dataKey.length - 1 ? "" : ",");
         var color = `rgba(${(i * 47) % 255}, ${(i * 71) % 255}, ${(i * 113) % 255}, 0.9)`;
         datasets.push({
-            label: dataKey[i],
+            label: orderConvert[dataKey[i]],
             backgroundColor: color,
             borderColor: 'rgba(60,141,188,0.8)',
             pointRadius: false,
@@ -173,7 +219,7 @@ function chart(dataX, dataCounts, dataKey) {
             pointStrokeColor: 'rgba(60,141,188,1)',
             pointHighlightFill: '#fff',
             pointHighlightStroke: 'rgba(60,141,188,1)',
-            data: dataCounts.map(countData => countData[i])
+            data: dataCounts.map(countData => countData[i]),
         });
     }
     $('#title-' + cardCreateCount).text(tittle)
@@ -195,8 +241,29 @@ function chart(dataX, dataCounts, dataKey) {
                     display: true
                 }
             }
-        }
-    };
+        },
+         plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                 var label = context.dataset.label || '';
+                                 var dataIndex = context.dataIndex;
+                                 var value = dataPerson[dataIndex][context.datasetIndex] + '%';
+                                 return label + ': ' + value;
+                            }
+                        }
+                    },
+                    datalabels: {
+                                anchor: 'end',
+                                align: 'end',
+                                formatter: function(value, context) {
+                                    var percentage = value + '%';
+                                    var customText = '额外的信息';
+                                    return percentage + ' ' + customText;
+                                }
+                    }
+                   }
+    }
     var barChart = new Chart(barChartCanvas, {
         data: data,
         type: 'bar',
