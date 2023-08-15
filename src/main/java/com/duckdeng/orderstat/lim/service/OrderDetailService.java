@@ -27,10 +27,10 @@ public class OrderDetailService {
                 .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999").get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         int newNumberOfDocuments = documents.size() + 1;
-
         String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
-        dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
+
         orderDetail.setOrderId(orderItemKey);
+        dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
 
         return orderDetail;
     }
