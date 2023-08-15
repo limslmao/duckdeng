@@ -20,6 +20,21 @@ let initJson = {
                    }
                  ]
                }
+const orderConvert = {
+  'duck': '鴨',
+  'chicken': '雞',
+  'full': '全隻',
+  'half': '半隻',
+  'N': '無香鍋',
+  'Y': '有香鍋麻辣',
+  'two': '兩吃',
+  'saute': '剁炒',
+  'cut': '剁盤',
+  'hand': '手扒',
+  'main':'主菜',
+  'add':'加購',
+  'null':'--'
+};
 const insertDataForm = {}
 $(function(){
     getData()
@@ -52,11 +67,11 @@ function queryItem() {
         var newRow = $('<tr>');
         newRow.append('<td>' + item.note + '</td>');
         newRow.append('<td>' + item.price + '</td>');
-        newRow.append('<td>' + item.itemType + '</td>');
-        newRow.append('<td>' + item.itemIngred + '</td>');
-        newRow.append('<td>' + item.itemUnit + '</td>');
-        newRow.append('<td>' + item.itemCookMethod + '</td>');
-        newRow.append('<td>' + item.itemSpicy + '</td>');
+        newRow.append('<td>' + orderConvert[item.itemType] + '</td>');
+        newRow.append('<td>' + orderConvert[item.itemIngred] + '</td>');
+        newRow.append('<td>' + orderConvert[item.itemUnit] + '</td>');
+        newRow.append('<td>' + orderConvert[item.itemCookMethod] + '</td>');
+        newRow.append('<td>' + orderConvert[item.itemSpicy] + '</td>');
         newRow.append('<td></td>');
         $('#tableBody').append(newRow);
     }
@@ -69,7 +84,7 @@ function addMenuItem() {
     var itemTypeSelect = $('<select class="form-select" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select>');
     var itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
     var itemUnitSelect = $('<select class="form-select" id="itemUnit"><option value="half">半隻</option><option value="full">全隻</option></select>');
-    var itemCookMethodSelect = $('<select class="form-select" id="itemCookMethod"><option value="two">兩吃</option><option value="saute">剁炒</option><option value="cut">切盤</option><option value="else">其他</option></select>');
+    var itemCookMethodSelect = $('<select class="form-select" id="itemCookMethod"><option value="two">兩吃</option><option value="saute">剁炒</option><option value="cut">剁盤</option><option value="hand">手扒</option><option value="else">其他</option></select>');
     var itemSpCheckInput = $('<input class="custom-checkbox" type="checkbox" id="itemSpCheck">');
 
     // Disable fields when 加購 option is selected
