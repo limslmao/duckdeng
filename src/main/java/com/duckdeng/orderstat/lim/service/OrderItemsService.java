@@ -20,6 +20,7 @@ public class OrderItemsService {
         int newNumberOfDocuments = documents.size()+1;
         String orderItemKey = String.format("%03d", newNumberOfDocuments);
 
+        orderItems.setItemId(orderItemKey);
         ApiFuture<WriteResult> collectionApiFuture = dbFirestore.collection("orderItems")
                 .document(orderItemKey).set(orderItems);
         return collectionApiFuture.get().getUpdateTime().toString();
