@@ -15,7 +15,7 @@ const valueToDbConvert = {
   'sauce'          :'014'
 }
 const orderItem = {};
-var totalPrice = '';
+var totalAmount = '';
 $(function(){
   newItemInputCreate()
   $('.spicy-checkbox').on('click', spicyCheckBox);
@@ -83,8 +83,8 @@ function countAllSpend() {
                     calculateSpend(cookie, 0, 30, 0) +
                     calculateSpend(sauce, 0, 20, 0);
     $('#totalCount').text(duckSpend);
-    totalPrice = duckSpend;
-   $('#orderFinish').prop('disabled', totalPrice != 0 ? false : true);
+    totalAmount = duckSpend;
+   $('#orderFinish').prop('disabled', totalAmount != 0 ? false : true);
     // 將數據映射到 orderItem
     mapToOrderItem('full_d_two', full_d_two || 0);
     mapToOrderItem('full_d_two_sp', full_d_two_sp || 0);
@@ -106,7 +106,7 @@ function newItemInputCreate() {//有要用到再做
 function orderFinish() {
   const orderJson = {
      orderItem,
-     totalPrice
+     totalAmount
   }
   const orderJsonString = JSON.stringify(orderJson);
   console.log(orderJsonString);

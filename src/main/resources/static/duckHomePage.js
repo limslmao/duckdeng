@@ -178,7 +178,6 @@ function getData() {
         }
         dataCounts.push(countData);
     }
-
     dataPerson = calculatePerson(dataCounts)
     chart(dataX, dataCounts, dataKey, dataPerson);
 }

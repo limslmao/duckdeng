@@ -23,8 +23,8 @@ let initJson = {
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
-  'full': '全隻',
-  'half': '半隻',
+  'full': '全支',
+  'half': '半支',
   'N': '無香鍋',
   'Y': '有香鍋麻辣',
   'two': '兩吃',
@@ -72,7 +72,8 @@ function queryItem() {
         newRow.append('<td>' + orderConvert[item.itemUnit] + '</td>');
         newRow.append('<td>' + orderConvert[item.itemCookMethod] + '</td>');
         newRow.append('<td>' + orderConvert[item.itemSpicy] + '</td>');
-        newRow.append('<td></td>');
+        newRow.append('<td><button class="btn btn-primary updateData">修改</button> <button class="btn btn-danger deleteData">刪除</button></td>');
+
         $('#tableBody').append(newRow);
     }
 }
@@ -106,8 +107,7 @@ function addMenuItem() {
     newRow.append($('<td>').html(itemUnitSelect));
     newRow.append($('<td>').html(itemCookMethodSelect));
     newRow.append($('<td>').html(itemSpCheckInput));
-    newRow.append('<td><button class="btn btn-primary cancel-button">取消</button></td>');
-    newRow.append('<td><button class="btn btn-primary confirm-button">確定</button></td>');
+    newRow.append('<td><button class="btn btn-primary cancel-button">取消</button> <button class="btn btn-primary confirm-button">確定</button></td>');
     $('#tableBody').append(newRow);
 }
 function cancelItemAdd() {

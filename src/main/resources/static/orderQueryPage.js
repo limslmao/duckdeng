@@ -20,6 +20,14 @@ let initJson = {
     }
   ]
 };
+let updateJson = {
+
+  "orderItem": {
+    "001": 2,
+    "013": 1
+  },
+  "totalAmount": 840
+}
 const orderConvert = {
   '001': '全鴨二吃',
   '002': '全鴨二吃香鍋麻辣',
@@ -36,21 +44,125 @@ const orderConvert = {
   '013': '荷葉餅一份',
   '014': '甜麵醬一份'
 };
-
+const priceConvert = {
+"001":600,
+"002":650,
+"003":320,
+"004":350,
+"005":590,
+"006":630,
+"007":300,
+"008":320,
+"009":570,
+"010":290,
+"011":450,
+"012":230,
+"013":30,
+"014":20
+}
+let orderId = ''
 $(document).ready(function() {
-$('#search').on('click', function(event) {
-    $('#loading').removeAttr('hidden');
-    event.preventDefault(); // Prevent the default link navigation
-    getOrderData(); // Call your function
+    $('#search').on('click', function(event) {
+        $('#loading').removeAttr('hidden');
+        event.preventDefault(); // Prevent the default link navigation
+        getOrderData(); // Call your function
+    });
+    $('.date-btn').on('click', function(event) {
+        event.preventDefault(); // Prevent the default link navigation
+        var clickedButtonId = $(this).attr('id');
+        getDate(clickedButtonId)
+    });
+    $('#dataContext').on('click', '.deleteData', function() {
+        const orderId = $(this).closest('tr').find('#orderId').text();
+        console.log(orderId)
+        deleteData(orderId)
+    });
+    $('#dataContext').on('click', '.updateData', function() {
+        orderId = $(this).closest('tr').find('#orderId').text();
+        createUpdateListHtml(orderId)
+    });
+    $('.modal-footer').on('click', '#updateSubmit', function() {
+            updateData(orderId);
+    });
 });
-$('.date-btn').on('click', function(event) {
-    event.preventDefault(); // Prevent the default link navigation
-    var clickedButtonId = $(this).attr('id');
-    getDate(clickedButtonId)
-});
-});
+function updateData(orderId) {
+   calculatePrice();
+    console.log(updateJson);
+    const orderJsonString = JSON.stringify(updateJson);
+     $.ajax({
+          type: 'PUT',
+          url: '/api/orderDetails/'+orderId+'',
+          data: orderJsonString, // 將 JSON 字串傳送至伺服器
+          contentType: 'application/json', // 設定 content type 為 JSON
+          success: function(response) {
+            $('#loading').attr('hidden', true);
+            $('#myModal').modal('hide');
+            console.log('Response:', JSON.stringify(response, null, 2));
+            alert('訂單'+orderId+'已更新成功')
+            getOrderData()
+          },
+          error: function(xhr, status, error) {
+            console.log('Error:', error);
+          }
+        });
 
+}
+function createUpdateListHtml(orderId){
+    $('#orderDtlCountTittle').text('訂單:'+orderId+' 修改')
+    var menuList = $('#orderDtlCount')
+    menuList.empty()
+    for (const key in orderConvert) {
+                if (orderConvert.hasOwnProperty(key)) {
+                    const value = orderConvert[key];
+                    // 创建 label 元素
+                    const label = document.createElement('label');
+                    label.textContent = value;
+                    // 创建 input 元素
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.placeholder = '請輸入數量';
+                    input.id = key;
+                    // 创建 li 元素，将 label 和 input 添加到 li 中
+                    const listItem = document.createElement('li');
+                    listItem.appendChild(label);
+                    listItem.appendChild(input);
+                    // 将 li 添加到 ul 中
+                    menuList.append(listItem);
+                }
+    }
+    $('#myModal').modal('show'); // 显示 Modal
+}
+function calculatePrice() {
+    sum = 0;
+    for (var i = 1; i <= 14; i++) {
+        if (i<10) {
+            count = $('#00' + i).val()||0;
+            updateJson.orderItem['00' + i] = parseInt(count)
+            sum += count * priceConvert['00' + i];
+        } else {
+            count = $('#0' + i).val()||0;
+            updateJson.orderItem['0' + i] = parseInt(count)
+            sum += count * priceConvert['0' + i];
+        }
+    }
+     updateJson.totalAmount = sum
+}
 
+function deleteData(orderId) {
+    $.ajax({
+      type: 'DELETE',
+      url: '/api/orderDetails/'+orderId+'',
+      success: function(response) {
+        $('#loading').attr('hidden', true);
+        console.log('Response:', JSON.stringify(response, null, 2));
+        alert('訂單'+orderId+'已成功刪除')
+        getOrderData()
+      },
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
+      }
+    });
+}
 function getDate(clickedButtonId) {
     const today = new Date();
     const year = today.getFullYear();
@@ -90,6 +202,7 @@ $.ajax({
     $('#loading').attr('hidden', true);
     console.log('Response:', JSON.stringify(response, null, 2));
     initJson = response
+    filterInitJson();
     contentHtmlInner();
   },
   error: function(xhr, status, error) {
@@ -99,14 +212,22 @@ $.ajax({
 
 }
 
+function filterInitJson() {
+  initJson.orderDtl = initJson.orderDtl.map(order => ({
+    ...order,
+    orderItem: Object.fromEntries(Object.entries(order.orderItem).filter(([key, value]) => value !== 0))
+  }));
+}
+
 function contentHtmlInner() {
   $('#dataContext').empty(); // 清空数据，避免重复添加
   let count = 0;
   for (const order of initJson.orderDtl) {
     const newRow = $('<tr>');
-    newRow.append('<td>' + order.orderId + '</td>');
+    newRow.append('<td id ="orderId">' + order.orderId + '</td>');
     newRow.append('<td>' + orderContentCreate(count) + '</td>');
     newRow.append('<td>' + order.totalAmount + '</td>');
+   newRow.append('<td><button class="btn btn-primary deleteData">刪除</button><br><br><button class="btn btn-primary updateData">修改</button></td>');
     $('#dataContext').append(newRow);
     count++;
   }
