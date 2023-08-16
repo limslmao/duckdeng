@@ -98,7 +98,7 @@ public class OrderReportService {
 
 
         // Step 6: set各式回傳值
-        reportData.setItemType(orderGroupByField.keySet()); //將回傳的DataType準備好
+        reportData.setItemType(orderGroupByField.keySet());
         reportData.setRangeType(dataRangeType);
         reportData.setCountDtl(countDetails);
 
