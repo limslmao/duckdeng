@@ -1,5 +1,6 @@
 package com.duckdeng.orderstat.lim.service;
 
+import com.duckdeng.orderstat.lim.model.CountDetail;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.model.OrderItems;
 import com.duckdeng.orderstat.lim.model.ReportData;
@@ -77,20 +78,30 @@ public class OrderReportService {
                 Integer count = itemCountEntry.getValue();
 
                 String type = itemIdToTypeMap.get(itemId); // Convert item ID to type
-                transformedCounts.merge(type, count, Integer::sum); // Merge counts by type
+                if (type != null) {
+                    transformedCounts.merge(type, count, Integer::sum); // Merge counts by type
+                }
             }
 
             transformedGroupedData.put(date, transformedCounts);
         }
         System.out.println("最後資料:"+transformedGroupedData);
 
+        List<CountDetail> countDetails = transformedGroupedData.entrySet().stream()
+                .map(entry -> {
+                    CountDetail detail = new CountDetail();
+                    detail.setRange(entry.getKey());
+                    detail.setCount(entry.getValue());
+                    return detail;
+                })
+                .toList();
 
-//        // Step 5: Construct the response.
+
+        // Step 6: set各式回傳值
         reportData.setItemType(orderGroupByField.keySet()); //將回傳的DataType準備好
         reportData.setRangeType(dataRangeType);
-//        reportData.setCountDtl(constructCountDetails(groupedData));
+        reportData.setCountDtl(countDetails);
 
-//
         return reportData;
     }
 
