@@ -45,7 +45,20 @@ $(function(){
     $('#tableBody').on('click', '.confirm-button', function() {
         confirmItemAdd()
     });
+    $('#tableBody').on('click', '.deleteData', function() {
+        const itemId = $(this).closest('tr').find('#itemId').text();
+        deleteData(itemId)
+    });
+    $('#tableBody').on('click', '.updateData', function() {
+        updateData()
+    });
 });
+function deleteData(itemId) {
+ console.log('delete'+itemId)
+}
+function updateData() {
+ console.log('updateData')
+}
 function getData() {
     $.ajax({
       type: 'GET',
@@ -65,6 +78,7 @@ function getData() {
 function queryItem() {
     for (const item of initJson.menuDtl) {
         var newRow = $('<tr>');
+        newRow.append('<td id = "itemId">' + item.itemId + '</td>');
         newRow.append('<td>' + item.note + '</td>');
         newRow.append('<td>' + item.price + '</td>');
         newRow.append('<td>' + orderConvert[item.itemType] + '</td>');

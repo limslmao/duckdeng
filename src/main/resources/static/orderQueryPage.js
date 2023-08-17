@@ -73,7 +73,7 @@ $(document).ready(function() {
         getDate(clickedButtonId)
     });
     $('#dataContext').on('click', '.deleteData', function() {
-        const orderId = $(this).closest('tr').find('#orderId').text();
+        orderId = $(this).closest('tr').find('#orderId').text();
         console.log(orderId)
         deleteData(orderId)
     });
