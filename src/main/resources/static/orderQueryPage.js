@@ -21,7 +21,6 @@ let initJson = {
   ]
 };
 let updateJson = {
-
   "orderItem": {
     "001": 2,
     "013": 1
@@ -86,7 +85,7 @@ $(document).ready(function() {
     });
 });
 function updateData(orderId) {
-   calculatePrice();
+    calculatePrice();
     console.log(updateJson);
     const orderJsonString = JSON.stringify(updateJson);
      $.ajax({
@@ -145,9 +144,11 @@ function calculatePrice() {
             sum += count * priceConvert['0' + i];
         }
     }
-     updateJson.totalAmount = sum
+    updateJson.totalAmount = sum
+//    labelHtml = '<label>金額:'+sum+'</label>'
+//    console.log(labelHtml)
+//    menuList.append(labelHtml)
 }
-
 function deleteData(orderId) {
     $.ajax({
       type: 'DELETE',
@@ -192,9 +193,17 @@ function getDate(clickedButtonId) {
     $('#startDate').val(formattedDate);
     $('#endDate').val(formattedDate);
 }
+function getFormattedDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = today.getDate().toString().padStart(2, '0');
+  return `${year}${month}${day}`;
+}
 function getOrderData() {
 var startDate = $('#startDate').val()||"20230810"
-var endDate = $('#endDate').val()||""
+var endDate = $('#endDate').val()|| getFormattedDate()
+console.log(getFormattedDate())
 $.ajax({
   type: 'GET',
   url: '/api/orderDetails?startDate='+startDate+'&endDate='+endDate+' ',

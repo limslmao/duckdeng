@@ -45,7 +45,7 @@ public class OrderReportService {
         Map<String, List<String>> orderGroupByField = orderItems.stream()
                 .filter(item -> getValueByField(item, itemType) != null)
                 .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
-                        Collectors.mapping(OrderItems::getItemId, Collectors.toList())));
+                        Collectors.mapping(OrderItems:: getItemId, Collectors.toList())));
         System.out.println("菜單分組:"+orderGroupByField);
 
         // Step 4: 新增一個map，裡面是訂單資料依照日期進行分組相加
