@@ -2,38 +2,45 @@ package com.duckdeng.orderstat.lim.service;
 
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.google.api.core.ApiFuture;
+import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrderDetailService {
-    public OrderDetail createOrderDetail(OrderDetail orderDetail) throws ExecutionException, InterruptedException {
+    public OrderDetail createOrderDetail(OrderDetail orderDetail) throws Exception {
+        if (orderDetail == null) {
+            throw new IllegalArgumentException("Order detail cannot be null.");
+        }
+
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
         Date today = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String datePart = dateFormat.format(today).substring(1);
 
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
-                .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
-                .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999").get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        int newNumberOfDocuments = documents.size() + 1;
-        String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
+        try {
+            ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
+                    .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
+                    .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999").get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            int newNumberOfDocuments = documents.size() + 1;
+            String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
 
-        orderDetail.setOrderId(orderItemKey);
-        dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
+            orderDetail.setOrderId(orderItemKey);
+            dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
 
-        return orderDetail;
+            return orderDetail;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new Exception("Error creating order detail.", e);
+        }
     }
+
 
     public OrderDetail getOrderDetail(String orderDetailId) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
@@ -71,16 +78,52 @@ public class OrderDetailService {
         return Collections.singletonMap(orderDetail, orderDetailList);
     }
 
-    public String updateOrderDetail(String orderDetailId, OrderDetail orderDetail) throws ExecutionException, InterruptedException {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionApiFuture = dbFirestore.collection("orderDetail").document(orderDetailId).set(orderDetail);
-        return collectionApiFuture.get().getUpdateTime().toString();
+    public boolean updateOrderDetail(String orderDetailId, OrderDetail orderDetail) throws Exception {
+        if (orderDetailId == null || orderDetailId.isEmpty()) {
+            throw new IllegalArgumentException("Order detail ID cannot be null or empty.");
+        }
+        if (orderDetail == null) {
+            throw new IllegalArgumentException("Order detail cannot be null.");
+        }
+        try {
+            Firestore dbFirestore = FirestoreClient.getFirestore();
+            DocumentReference documentReference = dbFirestore.collection("orderDetail").document(orderDetailId);
+            ApiFuture<DocumentSnapshot> future = documentReference.get();
+            DocumentSnapshot document = future.get();
+
+            if (document.exists()) {
+                ApiFuture<WriteResult> collectionApiFuture = documentReference.set(orderDetail);
+                WriteResult result = collectionApiFuture.get();
+                return result != null;
+            } else {
+                throw new NoSuchElementException("Order detail with ID " + orderDetailId + " not found.");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new Exception("Error updating order detail.", e);
+        }
     }
 
-    public String deleteOrderDetail(String orderDetailId) {
+
+    public boolean deleteOrderDetail(String orderDetailId) throws Exception {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderDetail").document(orderDetailId).delete();
-        return "Successfully deleted " + orderDetailId;
+        ApiFuture<WriteResult> future = dbFirestore.collection("orderDetail").document(orderDetailId).delete();
+
+        try {
+            WriteResult result = future.get();
+            if (result != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof NotFoundException) {
+                return false;
+            }
+            throw new Exception("An error occurred while deleting the order detail.", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new Exception("The delete operation was interrupted.", e);
+        }
     }
 
     private OrderDetail addOrderId(QueryDocumentSnapshot document) {

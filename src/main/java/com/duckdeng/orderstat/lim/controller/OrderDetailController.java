@@ -23,8 +23,13 @@ public class OrderDetailController {
     @PostMapping
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetail orderDetail) {
         try {
+            if (orderDetail == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order detail cannot be null.");
+            }
             OrderDetail newOrderDetail = orderDetailService.createOrderDetail(orderDetail);
             return ResponseEntity.status(HttpStatus.CREATED).body(newOrderDetail);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (ExecutionException | InterruptedException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order detail.");
         } catch (Exception e) {
@@ -53,13 +58,32 @@ public class OrderDetailController {
     }
 
     @PutMapping("/{orderDetailId}")
-    public String updateOrderDetail(@PathVariable String orderDetailId, @RequestBody OrderDetail orderDetail) throws ExecutionException, InterruptedException {
-        return orderDetailService.updateOrderDetail(orderDetailId, orderDetail);
+    public ResponseEntity<?> updateOrderDetail(@PathVariable String orderDetailId, @RequestBody OrderDetail orderDetail) {
+        try {
+            boolean isUpdated = orderDetailService.updateOrderDetail(orderDetailId, orderDetail);
+            if (isUpdated) {
+                return ResponseEntity.ok("Order detail updated successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order detail not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating order detail.");
+        }
     }
 
     @DeleteMapping("/{orderDetailId}")
-    public String deleteOrderDetail(@PathVariable String orderDetailId) {
-        return orderDetailService.deleteOrderDetail(orderDetailId);
+    public ResponseEntity<?> deleteOrderDetail(@PathVariable String orderDetailId) {
+        try {
+            boolean isDeleted = orderDetailService.deleteOrderDetail(orderDetailId);
+
+            if (isDeleted) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order detail not found.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the order detail.");
+        }
     }
 
     @GetMapping("/test")
