@@ -28,13 +28,19 @@ const dataForCondition = {//給他的
      rangeType: "week",//week,month,year
      type: "itemIngred"//itemIngred itemUnit itemCookMethod itemSpicy
 }
-const dataForResponse = {
+let dataForResponse = {
+   itemType: [
+        "cut",
+        "saute",
+        "two",
+        "hand"
+    ],
    rangeType:"week",
    countDtl: [
      {
        range:"Jan-1",
        count: {
-         two: 100,
+
          saute : 100,
          cut:80,
          hand:50
@@ -94,13 +100,14 @@ const dataForResponse = {
          hand:50
        }
      }
-   ],
-   totalCount: {
-     two: 1000,
-     saute : 1000,
-     cut:800,
-     hand:500
-   }
+   ]
+//   ,
+//   totalCount: {
+//     two: 1000,
+//     saute : 1000,
+//     cut:800,
+//     hand:500
+//   }
 }
 function updateDateRangeText() {
     var text = '';
@@ -155,6 +162,8 @@ function formatDateToYYYYMMDD(date) {
     return year  + month  + day;
 }
 function getData() {
+    $('#createSheet').prop('disabled', true);
+    $('#loading').attr('hidden', false);
     dateRange = $('#dateRange').val();
     dateType = $('#dateType').val();
     var weekDateRange = getStartDateAndEndDate(dateRange);
@@ -162,11 +171,25 @@ function getData() {
     dataForCondition.endDate =  weekDateRange.endDate;
     dataForCondition.rangeType =  dateRange;
     dataForCondition.type = dateType;
-    console.log(dataForCondition);
-//ajax input dataForCondition...
+     $.ajax({
+              type: 'GET',
+              url: '/api/orderReports?startDate='+dataForCondition.startDate+'&endDate='+dataForCondition.endDate+'&dataRangeType='+dataForCondition.rangeType+'&itemType='+dataForCondition.type+'',
+              contentType: 'application/json', // 設定 content type 為 JSON
+              success: function(response) {
+                console.log('Response:', JSON.stringify(response, null, 2));
+                dataForResponse = response
+                dataResponse()
+              },
+              error: function(xhr, status, error) {
+                console.log('Error:', error);
+              }
+            });
+}
+function dataResponse() {
     var countDtl = dataForResponse.countDtl;
     var countObject = dataForResponse.countDtl[0].count; // 获取 count 对象
-    var dataKey = Object.keys(countObject); // 获取 count 对象的所有键
+//    var dataKey = Object.keys(countObject); // 获取 count 对象的所有键
+    var dataKey =  dataForResponse.itemType;
     var dataX = [];
     var dataCounts = [];
     var dataPerson = [];
@@ -174,9 +197,11 @@ function getData() {
         dataX.push(countDtl[i].range);
         var countData = [];
         for (var j = 0; j < dataKey.length; j++) {
-            countData.push(countDtl[i].count[dataKey[j]]);
+            dataValue = countDtl[i].count[dataKey[j]] || 0
+            countData.push(dataValue);
         }
         dataCounts.push(countData);
+        console.log(dataCounts)
     }
     dataPerson = calculatePerson(dataCounts)
     chart(dataX, dataCounts, dataKey, dataPerson);
@@ -221,6 +246,7 @@ function chart(dataX, dataCounts, dataKey, dataPerson) {
             data: dataCounts.map(countData => countData[i]),
         });
     }
+    console.log(datasets)
     $('#title-' + cardCreateCount).text(tittle)
     var data = {
         labels: axisX,
@@ -268,6 +294,8 @@ function chart(dataX, dataCounts, dataKey, dataPerson) {
         type: 'bar',
         options: options
     });
+     $('#loading').attr('hidden', true);
+      $('#createSheet').prop('disabled', false);
 }
 function cardCreate() {
     cardCreateCount ++
