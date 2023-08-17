@@ -47,9 +47,21 @@ public class OrderItemsController {
     }
 
     @PutMapping("/{orderItemKey}")
-    public String updateOrderItems(@PathVariable String orderItemKey, @RequestBody OrderItems orderItems) throws ExecutionException, InterruptedException {
-        return orderItemsService.updateOrderItems(orderItemKey, orderItems);
+    public ResponseEntity<?> updateOrderItems(@PathVariable String orderItemKey, @RequestBody OrderItems orderItems) {
+        try {
+            String updateTime = orderItemsService.updateOrderItems(orderItemKey, orderItems);
+            if (updateTime != null) {
+                return ResponseEntity.ok().body("Order item updated successfully at " + updateTime);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order item not found.");
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging purposes
+            // Logger.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating order item.");
+        }
     }
+
 
     @DeleteMapping("/{orderItemKey}")
     public String deleteOrderItems(@PathVariable String orderItemKey) {

@@ -51,9 +51,18 @@ public class OrderItemsService {
 
     public String updateOrderItems(String orderItemKey, OrderItems orderItems) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionApiFuture = dbFirestore.collection("orderItems").document(orderItemKey).set(orderItems);
-        return collectionApiFuture.get().getUpdateTime().toString();
+        DocumentReference documentReference = dbFirestore.collection("orderItems").document(orderItemKey);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        DocumentSnapshot document = future.get();
+
+        if (document.exists()) {
+            ApiFuture<WriteResult> collectionApiFuture = documentReference.set(orderItems);
+            return collectionApiFuture.get().getUpdateTime().toString();
+        } else {
+            return null; // Order item not found
+        }
     }
+
 
     public String deleteOrderItems(String orderItemKey) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
