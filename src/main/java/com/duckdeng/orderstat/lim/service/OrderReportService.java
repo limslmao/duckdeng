@@ -33,15 +33,15 @@ public class OrderReportService {
 
         ReportData reportData = new ReportData();
 
-        // Step 1: Get order details within the date range.
+        // Step 1: 取得日期範圍內的訂單
         Map<String, List<OrderDetail>> orderDetailsMap = orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
         List<OrderDetail> orderDetails = orderDetailsMap.get("orderDtl");
 
-        // Step 2: Get all order items.
+        // Step 2: 取得所有菜單
         Map<String, List<OrderItems>> orderItemsMap = orderItemsService.getAllOrderItems();
         List<OrderItems> orderItems = orderItemsMap.get("menuDtl");
 
-        // Step 3: 將傳入的分類方法值取出，並且用這個值幫菜單進行分組
+        // Step 3: 用dataRangeType值幫菜單進行分組
         Map<String, List<String>> orderGroupByField = orderItems.stream()
                 .filter(item -> getValueByField(item, itemType) != null)
                 .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
@@ -97,7 +97,7 @@ public class OrderReportService {
                 .toList();
 
 
-        // Step 6: set各式回傳值
+        // Step 6: set各個回傳值
         reportData.setItemType(orderGroupByField.keySet());
         reportData.setRangeType(dataRangeType);
         reportData.setCountDtl(countDetails);
