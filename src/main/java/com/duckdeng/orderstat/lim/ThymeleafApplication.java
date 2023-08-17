@@ -6,18 +6,15 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 @SpringBootApplication
 public class ThymeleafApplication {
     public static void main(String[] args) throws IOException {
         ClassLoader classLoader = ThymeleafApplication.class.getClassLoader();
-
-        File file = new File(Objects.requireNonNull(classLoader.getResource("serviceAccountKey.json")).getFile());
-
-        InputStream serviceAccount = new FileInputStream(file.getAbsolutePath());
+        InputStream serviceAccount = Objects.requireNonNull(classLoader.getResourceAsStream("serviceAccountKey.json"));
         FirebaseOptions options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
 
         if (FirebaseApp.getApps().isEmpty()) {
