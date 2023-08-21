@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>duckDeng菜單編輯</title>
-
+    <title>duckDeng訂單輸入</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
     <!-- Font Awesome -->
@@ -65,6 +64,7 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
+
                     <li class="nav-item">
                         <a href="../layout/orderQueryPage.html" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -104,7 +104,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>菜單編輯功能</h1>
+                        <h1>訂單輸入功能</h1>
                     </div>
                     <div class="col-sm-6">
                     </div>
@@ -113,42 +113,109 @@
         </section>
 
         <!-- Main content -->
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">單號</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form>
+                    <div class="form-group">
+
+                        <label for="date">日期</label>
+                        <input type="text" class="form-control" id="date" >
+                    </div>
+
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">鴨</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row"  id = "duckItem">
+
+                        </div>
+
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">雞</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id = "chickenItem">
 
 
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
 
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">加購</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id = "addItem">
+<!--                            <div class="col-3">-->
+<!--                                <label>荷葉餅:</label>-->
+<!--                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/30" id = "cookie">-->
+<!--                            </div>-->
+<!--                            <div class="col-3">-->
+<!--                                <label>甜麵醬:</label>-->
+<!--                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/20" id="sauce">-->
+<!--                            </div>-->
 
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
 
+                <div class="card card-danger" hidden="true">
+                    <div class="card-header">
+                        <h3 class="card-title">新品</h3>
+                    </div>
+                    <div class="card-body-new">
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <div class="card-footer">
+                    <button  class="btn btn-primary" id = 'orderMenu' >點餐</button>
+                </div>
+            </form>
+        </div>
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">目前菜單</h3>
-                <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" id = "loading">
+                <h3 class="card-title">點餐結果</h3>
+                <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" id = "loading" hidden="false">
             </div>
             <!-- /.card-header -->
             <div class="card-body p-0">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>編號</th>
-                        <th>項目</th>
-                        <th>金額</th>
-                        <th>項目類型</th>
-                        <th>食材</th>
-                        <th>半/全</th>
-                        <th>煮法</th>
-                        <th>香鍋麻辣</th>
-                        <th>成本</th>
-                        <th>功能</th>
+                        <th>總金額</th>
+                        <th>備註</th>
+                        <th>折價</th>
 
                     </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <tbody>
+                    <tr>
+                        <td><span id="totalCount">0</span></td>
+                        <td><span><input type="text" placeholder="請輸入備註" disabled = 'true' id = "remark"></span></td>
+                        <td><span><input class ="discount" type="number" placeholder="請輸入金額" disabled = 'true' id = "discountInput"><button id="discountBtn" class="btn btn-primary discount" disabled = 'true'>折價</button></span></td>
+                        <td><span><button id="orderFinish" class="btn btn-primary" disabled = 'true'>結單</button></span></td>
+                    </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-primary" id = "addItem" disabled = "true">新增項目</button>
             </div>
+
             <!-- /.card-body -->
         </div>
 
+        <!-- Modal -->
 
 
         <!-- /.content -->
@@ -171,22 +238,19 @@
 
 
 
-
-
+<!-- 引入 JavaScript 檔案 -->
 <!-- jQuery -->
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
-<script src="../../menuEditPage.js"></script>
+<script src="../../orderInsertPage2.js"></script>
 <style>
-.custom-checkbox {
-  transform: scale(1.5);
-  vertical-align: middle;
-}
+  label.interactive {
+    cursor: pointer;
+  }
 </style>
-
 
 <!-- AdminLTE App -->
 

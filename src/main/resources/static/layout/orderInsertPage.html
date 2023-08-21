@@ -79,6 +79,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="../layout/orderInsertPage2.html" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>訂單輸入-2</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="../layout/menuEditPage.html" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
                             <p>菜單編輯</p>
@@ -159,7 +165,7 @@
                                 <input type="number" class="form-control" placeholder="請輸入數量 1份/600" style="width: 100%;" id = "duckTwoCount-full">
                                 <input class="spicy-checkbox" type="checkbox" id = "duckTwoSpCheck-full" data-target='duckTwoSpCount-full'>
                                 <label for = "duckTwoSpCheck-full" class="form-check-label interactive">香鍋麻辣</label>
-                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價20" style="width: 100%;" id = duckTwoSpCount-full hidden="true">
+                                <input type="number" class="form-control" placeholder="請輸入香鍋麻辣數量 1份/加價50" style="width: 100%;" id = duckTwoSpCount-full hidden="true">
                             </div>
                             <div class="col-3">
                                 <label>剁炒:</label>
@@ -202,15 +208,15 @@
                         <h3 class="card-title">加購</h3>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-3">
-                                <label>荷葉餅:</label>
-                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/30" id = "cookie">
-                            </div>
-                            <div class="col-3">
-                                <label>甜麵醬:</label>
-                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/20" id="sauce">
-                            </div>
+                        <div class="row" id = "addItem">
+<!--                            <div class="col-3">-->
+<!--                                <label>荷葉餅:</label>-->
+<!--                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/30" id = "cookie">-->
+<!--                            </div>-->
+<!--                            <div class="col-3">-->
+<!--                                <label>甜麵醬:</label>-->
+<!--                                <input type="number" class="form-control" placeholder="請輸入加購份數 1份/20" id="sauce">-->
+<!--                            </div>-->
 
                         </div>
                     </div>
@@ -240,12 +246,17 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th >總金額</th>
+                        <th>總金額</th>
+                        <th>備註</th>
+                        <th>折價</th>
+
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td><span id="totalCount">0</span></td>
+                        <td><span><input type="text" placeholder="請輸入備註" disabled = 'true' id = "remark"></span></td>
+                        <td><span><input type="number" placeholder="請輸入金額" disabled = 'true' id = "discountInput"><button id="discountBtn" class="btn btn-primary" disabled = 'true'>折價</button></span></td>
                         <td><span><button id="orderFinish" class="btn btn-primary" disabled = 'true'>結單</button></span></td>
                     </tr>
                     </tbody>

@@ -1,22 +1,26 @@
 let initJson = {
                  "menuDtl": [
                    {
+                     "itemId":"001",
                      "price":600,
                      "itemType":"main",
                      "itemIngred":"duck",
                      "itemUnit":"full",
                      "itemSpicy":"N",
                      "itemCookMethod":"two",
-                     "note": "全鴨二吃"
+                     "note": "全鴨二吃",
+                     "itemCost": 50
                    },
                     {
+                     "itemId":"002",
                      "price":650,
                      "itemType":"main",
                      "itemIngred":"duck",
                      "itemUnit":"full",
                      "itemSpicy":"Y",
                      "itemCookMethod":"two",
-                     "note": "全鴨二吃"
+                     "note": "全鴨二吃",
+                     "itemCost": 50
                    }
                  ]
                }
@@ -33,7 +37,7 @@ const orderConvert = {
   'hand': '手扒',
   'main':'主菜',
   'add':'加購',
-  'null':'--'
+  'null':'--',
 };
 const insertDataForm = {};
 const updateDataFrom = {
@@ -44,7 +48,8 @@ const updateDataFrom = {
      itemUnit:"full",
      itemSpicy:"Y",
      itemCookMethod:"two",
-     note:"蔥爆牛肉"
+     note:"蔥爆牛肉",
+     itemCost:50
 };
 let buttonClick = ""
 let updateHtml = ""
@@ -70,10 +75,7 @@ $(function(){
     updateDataFrom.itemIngred= $(this).closest('tr').find('#itemIngredForTd').text();
     updateDataFrom.itemCookMethod= $(this).closest('tr').find('#itemCookMethodForTd').text();
     updateDataFrom.itemSpicy = $(this).closest('tr').find('#itemSpCheckForTd').text();
-//    const fieldNames = ['itemId','note', 'price', 'itemType', 'itemUnit', 'itemIngred', 'itemCookMethod', 'itemSpCheck'];
-//    fieldNames.forEach(fieldName => {
-//        updateDataFrom[fieldName] = $(this).closest('tr').find(`#${fieldName}ForTd`).text();
-//    });
+    updateDataFrom.itemCost = $(this).closest('tr').find('#itemCostForTd').text();
     updateHtml =  $(this).closest('tr')
     updateHtml.remove()
     updateData()
@@ -127,8 +129,8 @@ function queryItem() {
         newRow.append('<td id = "itemUnitForTd">' + orderConvert[item.itemUnit] + '</td>');
         newRow.append('<td id = "itemCookMethodForTd">' + orderConvert[item.itemCookMethod] + '</td>');
         newRow.append('<td id = "itemSpCheckForTd">' + orderConvert[item.itemSpicy] + '</td>');
+        newRow.append('<td id = "itemCostForTd">' +item.itemCost + '</td>');
         newRow.append('<td><button class="btn btn-primary updateData">修改</button> <button class="btn btn-danger deleteData">刪除</button></td>');
-
         $('#tableBody').append(newRow);
     }
 }
@@ -142,7 +144,8 @@ function addMenuItem() {
     var itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
     var itemUnitSelect = $('<select class="form-select" id="itemUnit"><option value="half">半隻</option><option value="full">全隻</option></select>');
     var itemCookMethodSelect = $('<select class="form-select" id="itemCookMethod"><option value="two">兩吃</option><option value="saute">剁炒</option><option value="cut">剁盤</option><option value="hand">手扒</option><option value="else">其他</option></select>');
-    var itemSpCheckInput = $('<input class="custom-checkbox" type="checkbox" id="itemSpCheck">');
+    var itemSpCheckInput = $('<input class="custom-checkbox" type="checkbox" id="itemSpCheck" >');
+
 
     // Disable fields when 加購 option is selected
     itemTypeSelect.on('change', function() {
@@ -163,6 +166,7 @@ function addMenuItem() {
     newRow.append($('<td>').html(itemUnitSelect));
     newRow.append($('<td>').html(itemCookMethodSelect));
     newRow.append($('<td>').html(itemSpCheckInput));
+    newRow.append('<td><input class="form-control" type="number" id="itemCost" placeholder="請輸入成本金額"></td>');
     newRow.append('<td><button class="btn btn-primary cancel-button">取消</button> <button class="btn btn-primary confirm-button">確定</button></td>');
     $('#tableBody').append(newRow);
     if (buttonClick == 'update') {
@@ -174,6 +178,7 @@ function addMenuItem() {
         $('#itemUnit').val(findKeyByValue(orderConvert, updateDataFrom.itemUnit) );
         $('#itemCookMethod').val(findKeyByValue(orderConvert, updateDataFrom.itemCookMethod ) );
         $('#itemSpCheck').prop('checked', findKeyByValue(orderConvert,updateDataFrom.itemSpicy) === 'Y' ? true : false);
+        $('#itemCost').val(updateDataFrom.itemCost);
     }
 }
 function findKeyByValue(obj, value) {
@@ -190,13 +195,14 @@ function cancelItemAdd() {
     $('#createItem').remove();
     $('#tableBody').append(updateHtml);
 }
-function confirmItemAdd() {
+function confirmItemAdd() { //insert update 共用
     insertDataForm.price = parseFloat($('#itemPrice').val());
     insertDataForm.itemType = $('#itemType').val();
     insertDataForm.itemIngred =$('#itemIngred').val();
     insertDataForm.itemUnit = $('#itemUnit').val();
     insertDataForm.itemCookMethod = $('#itemCookMethod').val();
     insertDataForm.itemSpicy = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
+    insertDataForm.itemCost =  $('#itemCost').val();
     if (insertDataForm.itemType == "add") {
         insertDataForm.itemSpicy = null
     }

@@ -5,7 +5,9 @@ let initJson = {
       "orderItem": {
         "001": 1,
         "002": 1,
-        "003": 2
+        "003": 2,
+        "discount":50,
+        "remark":"測試"
       },
       "totalAmount": 670
     },
@@ -14,16 +16,20 @@ let initJson = {
       "orderItem": {
         "001": 1,
         "002": 1,
-        "003": 2
+        "003": 2,
+        "discount":50,
+        "remark":"測試"
       },
-      "totalAmount": 670
+      "totalAmount": 670,
     }
   ]
 };
 let updateJson = {
   "orderItem": {
     "001": 2,
-    "013": 1
+    "013": 1,
+    "discount":50,
+    "remark":"測試"
   },
   "totalAmount": 840
 }
@@ -41,7 +47,9 @@ const orderConvert = {
   '011': '手扒雞一隻',
   '012': '手扒雞半隻',
   '013': '荷葉餅一份',
-  '014': '甜麵醬一份'
+  '014': '甜麵醬一份',
+  'discount':'折扣',
+  'remark':'備註'
 };
 const priceConvert = {
 "001":600,
@@ -86,8 +94,8 @@ $(document).ready(function() {
 });
 function updateData(orderId) {
     calculatePrice();
-    console.log(updateJson);
     const orderJsonString = JSON.stringify(updateJson);
+    console.log(orderJsonString)
      $.ajax({
           type: 'PUT',
           url: '/api/orderDetails/'+orderId+'',
@@ -104,7 +112,6 @@ function updateData(orderId) {
             console.log('Error:', error);
           }
         });
-
 }
 function createUpdateListHtml(orderId){
     $('#orderDtlCountTittle').text('訂單:'+orderId+' 修改')
@@ -118,7 +125,9 @@ function createUpdateListHtml(orderId){
                     label.textContent = value;
                     // 创建 input 元素
                     const input = document.createElement('input');
-                    input.type = 'number';
+                    if(key != 'remark') {
+                        input.type = 'number';
+                    }
                     input.placeholder = '請輸入數量';
                     input.id = key;
                     // 创建 li 元素，将 label 和 input 添加到 li 中
@@ -144,7 +153,11 @@ function calculatePrice() {
             sum += count * priceConvert['0' + i];
         }
     }
-    updateJson.totalAmount = sum
+    discount = $('#discount').val();
+    updateJson.orderItem['discount'] = discount
+    updateJson.orderItem['remark'] = $('#remark').val();
+    updateJson.totalAmount = sum - discount
+
 //    labelHtml = '<label>金額:'+sum+'</label>'
 //    console.log(labelHtml)
 //    menuList.append(labelHtml)
