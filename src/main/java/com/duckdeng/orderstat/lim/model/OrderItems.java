@@ -7,11 +7,12 @@ import lombok.Setter;
 @Setter
 public class OrderItems {
     private String itemId;
+    private int price;
     private String itemType;
-    private String itemUnit;
     private String itemIngred;
+    private String itemUnit;
     private String itemSpicy;
     private String itemCookMethod;
-    private int price;
     private String note;
+    private int itemCost;
 }
