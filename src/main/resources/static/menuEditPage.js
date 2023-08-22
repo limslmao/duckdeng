@@ -191,7 +191,7 @@ function findKeyByValue(obj, value) {
 }
 
 function cancelItemAdd() {
-    $('.updateData, .deleteData').prop('disabled', false);
+    $('.updateData, .deleteData,  #addItem').prop('disabled', false);
     $('#createItem').remove();
     $('#tableBody').append(updateHtml);
 }

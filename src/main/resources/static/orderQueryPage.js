@@ -27,10 +27,11 @@ let initJson = {
 let updateJson = {
   "orderItem": {
     "001": 2,
-    "013": 1,
-    "discount":50,
-    "remark":"測試"
+    "013": 1
+
   },
+     "discount":50,
+      "remark":"測試",
   "totalAmount": 840
 }
 const orderConvert = {
@@ -93,25 +94,27 @@ $(document).ready(function() {
     });
 });
 function updateData(orderId) {
-    calculatePrice();
-    const orderJsonString = JSON.stringify(updateJson);
-    console.log(orderJsonString)
-     $.ajax({
-          type: 'PUT',
-          url: '/api/orderDetails/'+orderId+'',
-          data: orderJsonString, // 將 JSON 字串傳送至伺服器
-          contentType: 'application/json', // 設定 content type 為 JSON
-          success: function(response) {
-            $('#loading').attr('hidden', true);
-            $('#myModal').modal('hide');
-            console.log('Response:', JSON.stringify(response, null, 2));
-            alert('訂單'+orderId+'已更新成功')
-            getOrderData()
-          },
-          error: function(xhr, status, error) {
-            console.log('Error:', error);
-          }
-        });
+    let result = calculatePrice();
+    if (result != false) {
+        const orderJsonString = JSON.stringify(updateJson);
+             $.ajax({
+                  type: 'PUT',
+                  url: '/api/orderDetails/'+orderId+'',
+                  data: orderJsonString, // 將 JSON 字串傳送至伺服器
+                  contentType: 'application/json', // 設定 content type 為 JSON
+                  success: function(response) {
+                    $('#loading').attr('hidden', true);
+                    $('#myModal').modal('hide');
+                    console.log('Response:', JSON.stringify(response, null, 2));
+                    alert('訂單'+orderId+'已更新成功')
+                    getOrderData()
+                  },
+                  error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                  }
+                });
+    }
+
 }
 function createUpdateListHtml(orderId){
     $('#orderDtlCountTittle').text('訂單:'+orderId+' 修改')
@@ -153,9 +156,13 @@ function calculatePrice() {
             sum += count * priceConvert['0' + i];
         }
     }
+    if (sum == 0) {
+        alert("請選擇品項")
+        return false
+    }
     discount = $('#discount').val();
-    updateJson.orderItem['discount'] = discount
-    updateJson.orderItem['remark'] = $('#remark').val();
+    updateJson.discount = discount
+    updateJson.remark = $('#remark').val();
     updateJson.totalAmount = sum - discount
 
 //    labelHtml = '<label>金額:'+sum+'</label>'
@@ -216,7 +223,6 @@ function getFormattedDate() {
 function getOrderData() {
 var startDate = $('#startDate').val()||"20230810"
 var endDate = $('#endDate').val()|| getFormattedDate()
-console.log(getFormattedDate())
 $.ajax({
   type: 'GET',
   url: '/api/orderDetails?startDate='+startDate+'&endDate='+endDate+' ',
@@ -248,7 +254,8 @@ function contentHtmlInner() {
     const newRow = $('<tr>');
     newRow.append('<td id ="orderId">' + order.orderId + '</td>');
     newRow.append('<td>' + orderContentCreate(count) + '</td>');
-    newRow.append('<td>' + order.totalAmount + '</td>');
+    newRow.append('<td>' + order.totalAmount + (order.discount && order.discount !== 0 ? ' <br> (已折扣:' + order.discount + ')' : '') + '</td>');
+    newRow.append('<td>' + (order.remark == null ? '無' : order.remark) + '</td>');
    newRow.append('<td><button class="btn btn-primary deleteData">刪除</button><br><br><button class="btn btn-primary updateData">修改</button></td>');
     $('#dataContext').append(newRow);
     count++;
