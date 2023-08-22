@@ -29,115 +29,88 @@ const dataForCondition = {//給他的
      rangeType: "week",//week,month,year
      type: "itemIngred"//itemIngred itemUnit itemCookMethod itemSpicy
 }
-let dataForResponse  = {
-                        itemType: ["cut", "saute", "two", "hand"],
-                        rangeType: "week",
-                        countDtl: [
-                          {
-                            range: "Jan-1",
-                            count: {
-                              saute: 100,
-                              cut: 80,
-                              hand: 50
-                            },
-                            cost: {
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Jan-2",
-                            count: {
-                              two: 100,
-                              saute: 180,
-                              cut: 90,
-                              hand: 50
-                            },
-                            cost: {
-                              two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Jan-3",
-                            count: {
-                              two: 100,
-                              saute: 100,
-                              cut: 89,
-                              hand: 80
-                            },
-                            cost: {
-                                two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Jan-4",
-                            count: {
-                              two: 90,
-                              saute: 100,
-                              cut: 50,
-                              hand: 50
-                            },
-                            cost: {
-                            two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Feb-1",
-                            count: {
-                              two: 100,
-                              saute: 100,
-                              cut: 80,
-                              hand: 50
-                            },
-                            cost: {
-                            two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Feb-2",
-                            count: {
-                              two: 100,
-                              saute: 100,
-                              cut: 80,
-                              hand: 50
-                            },
-                            cost: {
-                            two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          },
-                          {
-                            range: "Feb-3",
-                            count: {
-                              two: 100,
-                              saute: 100,
-                              cut: 80,
-                              hand: 50
-                            },
-                            cost: {
-                            two: 4500,
-                              saute: 5000,
-                              cut: 4000,
-                              hand: 2500
-                            }
-                          }
-                        ]
-                      };
+let dataForResponse = {
+   itemType: [
+        "cut",
+        "saute",
+        "two",
+        "hand"
+    ],
+   rangeType:"week",
+   countDtl: [
+     {
+       range:"Jan-1",
+       count: {
+
+         saute : 100,
+         cut:80,
+         hand:50
+       }
+     },
+     {
+       range:"Jan-2",
+       count: {
+         two: 100,
+         saute : 180,
+         cut:90,
+         hand:50
+       }
+     },
+     {
+       range:"Jan-3",
+       count: {
+         two: 100,
+         saute : 100,
+         cut:89,
+         hand:80
+       }
+     },
+     {
+       range:"Jan-4",
+       count: {
+         two: 90,
+         saute : 100,
+         cut:50,
+         hand:50
+       }
+     },
+     {
+       range:"Feb-1",
+       count: {
+        two: 100,
+        saute : 100,
+        cut:80,
+        hand:50
+       }
+     },
+     {
+       range:"Feb-2",
+       count: {
+         two: 100,
+         saute : 100,
+         cut:80,
+         hand:50
+       }
+     },
+     {
+       range:"Feb-3",
+       count: {
+         two: 100,
+         saute : 100,
+         cut:80,
+         hand:50
+       }
+     }
+   ]
+//   ,
+//   totalCount: {
+//     two: 1000,
+//     saute : 1000,
+//     cut:800,
+//     hand:500
+//   }
+}
+
 function updateDateRangeText() {
     var text = '';
     switch ($('#dateRange').val()) {
@@ -217,6 +190,7 @@ function getData() {
 function dataResponse() {
     var countDtl = dataForResponse.countDtl;
     var countObject = dataForResponse.countDtl[0].count; // 获取 count 对象
+//    var dataKey = Object.keys(countObject); // 获取 count 对象的所有键
     var dataKey =  dataForResponse.itemType;
     var dataX = [];
     var dataCounts = [];
@@ -229,15 +203,17 @@ function dataResponse() {
         for (var j = 0; j < dataKey.length; j++) {
             dataValue = countDtl[i].count[dataKey[j]] || 0
             countData.push(dataValue);
-            dataValue = countDtl[i].cost[dataKey[j]] || 0
-            costData.push(dataValue/100);
+//            dataValue = countDtl[i].cost[dataKey[j]] || 0
+//            costData.push(dataValue/100);
         }
         dataCounts.push(countData);
+        console.log(dataCounts)
         dataCosts.push(costData);
     }
     dataPerson = calculatePerson(dataCounts)
+    chart(dataX, dataCounts, dataKey, dataPerson);
 
-    chart(dataX, dataCounts, dataKey, dataPerson,dataCosts);
+//    chart(dataX, dataCounts, dataKey, dataPerson,dataCosts);
 }
 function calculatePerson(dataCounts) {
       var dataPerson = [];
@@ -263,7 +239,7 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
     var barChartCanvas = $('#barChart-' + cardCreateCount).get(0).getContext('2d');
     var axisX = dataX;
     var datasets = [];
-    var tittle = "";
+    var tittle = ""
     for (var i = 0; i < dataKey.length; i++) {
         tittle += orderConvert[dataKey[i]] + (i === dataKey.length - 1 ? "" : ",");
         var color = `rgba(${(i * 47) % 255}, ${(i * 71) % 255}, ${(i * 113) % 255}, 0.9)`;
@@ -279,7 +255,8 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
             data: dataCounts.map(countData => countData[i]),
         });
     }
-    $('#title-' + cardCreateCount).text(tittle);
+    console.log(datasets)
+    $('#title-' + cardCreateCount).text(tittle)
     var data = {
         labels: axisX,
         datasets: datasets
@@ -296,31 +273,26 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
             y: {
                 grid: {
                     display: true
-                }, xAxes: [
-                                  {
-                                      display: true,
-                                      position: 'bottom' // 放置在下方
-                                  }
-                              ]
+                }
             }
-        },plugins: {
-                              tooltip: {
-                                  callbacks: {
-                                      label: function(context) {
-                                          var label = context.dataset.label || '';
-                                          var dataIndex = context.dataIndex;
-                                          var value = dataPerson[dataIndex][context.datasetIndex] + '%';
-                                          return label + ': ' + value;
-                                      }
-                                  }
-                              }
-                          }
 
-    };
+        }, plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                             var label = context.dataset.label || '';
+                             var dataIndex = context.dataIndex;
+                             var value = dataPerson[dataIndex][context.datasetIndex] + '%';
+                             return label + ': ' + value;
+                        }
+                    }
+                },
+             }
+        }
     var barChart = new Chart(barChartCanvas, {
         data: data,
         type: 'bar',
-        options: options,
+        options: options
 
     });
 //    let dataX_2 = [];
