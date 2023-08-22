@@ -46,12 +46,10 @@ public class OrderReportService {
                 .filter(item -> getValueByField(item, itemType) != null)
                 .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
                         Collectors.mapping(OrderItems:: getItemId, Collectors.toList())));
-        System.out.println("菜單分組:"+orderGroupByField);
 
         // Step 4: 新增一個map，裡面是訂單資料依照日期進行分組相加
         Map<String, Map<String, Integer>> detailGroupByDate;
         detailGroupByDate = groupAndAggregate(orderDetails, dataRangeType);
-        System.out.println("訂單分組:"+detailGroupByDate);
 
         // Step 5: 將依照烹飪方式分類的菜單Map，跟依日期分類的訂單map進行整合
 
@@ -85,7 +83,6 @@ public class OrderReportService {
 
             transformedGroupedData.put(date, transformedCounts);
         }
-        System.out.println("最後資料:"+transformedGroupedData);
 
         List<CountDetail> countDetails = transformedGroupedData.entrySet().stream()
                 .map(entry -> {
