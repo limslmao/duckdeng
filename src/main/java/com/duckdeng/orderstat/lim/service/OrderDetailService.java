@@ -92,6 +92,7 @@ public class OrderDetailService {
             DocumentSnapshot document = future.get();
 
             if (document.exists()) {
+                orderDetail.setOrderId(orderDetailId);
                 ApiFuture<WriteResult> collectionApiFuture = documentReference.set(orderDetail);
                 WriteResult result = collectionApiFuture.get();
                 return result != null;
