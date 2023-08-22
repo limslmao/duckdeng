@@ -256,7 +256,7 @@ function contentHtmlInner() {
     newRow.append('<td>' + orderContentCreate(count) + '</td>');
     newRow.append('<td>' + order.totalAmount + (order.discount && order.discount !== 0 ? ' <br> (已折扣:' + order.discount + ')' : '') + '</td>');
     newRow.append('<td>' + (order.remark == null ? '無' : order.remark) + '</td>');
-   newRow.append('<td><button class="btn btn-primary deleteData">刪除</button><br><br><button class="btn btn-primary updateData">修改</button></td>');
+   newRow.append('<td><button class="btn btn-danger deleteData">刪除</button><br><br><button class="btn btn-primary updateData">修改</button></td>');
     $('#dataContext').append(newRow);
     count++;
   }

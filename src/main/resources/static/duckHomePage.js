@@ -21,7 +21,9 @@ const orderConvert = {
   'two': '兩吃',
   'saute': '剁炒',
   'cut': '剁盤',
-  'hand': '手扒'
+  'hand': '手扒',
+  'cost':'成本',
+  'revenue':'收益'
 };
 const dataForCondition = {//給他的
      startDate: "20230211",
@@ -30,86 +32,63 @@ const dataForCondition = {//給他的
      type: "itemIngred"//itemIngred itemUnit itemCookMethod itemSpicy
 }
 let dataForResponse = {
-   itemType: [
-        "cut",
-        "saute",
-        "two",
-        "hand"
-    ],
-   rangeType:"week",
-   countDtl: [
-     {
-       range:"Jan-1",
-       count: {
-
-         saute : 100,
-         cut:80,
-         hand:50
-       }
-     },
-     {
-       range:"Jan-2",
-       count: {
-         two: 100,
-         saute : 180,
-         cut:90,
-         hand:50
-       }
-     },
-     {
-       range:"Jan-3",
-       count: {
-         two: 100,
-         saute : 100,
-         cut:89,
-         hand:80
-       }
-     },
-     {
-       range:"Jan-4",
-       count: {
-         two: 90,
-         saute : 100,
-         cut:50,
-         hand:50
-       }
-     },
-     {
-       range:"Feb-1",
-       count: {
-        two: 100,
-        saute : 100,
-        cut:80,
-        hand:50
-       }
-     },
-     {
-       range:"Feb-2",
-       count: {
-         two: 100,
-         saute : 100,
-         cut:80,
-         hand:50
-       }
-     },
-     {
-       range:"Feb-3",
-       count: {
-         two: 100,
-         saute : 100,
-         cut:80,
-         hand:50
-       }
-     }
-   ]
-//   ,
-//   totalCount: {
-//     two: 1000,
-//     saute : 1000,
-//     cut:800,
-//     hand:500
-//   }
-}
+                         "itemType": [
+                              "revenue",
+                              "cost"
+                          ],
+                         "rangeType": "week",
+                         "countDtl": [
+                           {
+                             "range": "Jan-1",
+                             "count": {
+                               "cost": 10000,
+                               "revenue": 8000
+                             }
+                           },
+                           {
+                             "range": "Jan-2",
+                             "count": {
+                               "cost": 12000,
+                               "revenue": 8600
+                             }
+                           },
+                           {
+                             "range": "Jan-3",
+                             "count": {
+                               "cost": 15000,
+                               "revenue": 9000
+                             }
+                           },
+                           {
+                             "range": "Jan-4",
+                             "count": {
+                               "cost": 18000,
+                               "revenue": 10000
+                             }
+                           },
+                           {
+                             "range": "Feb-1",
+                             "count": {
+                               "cost": 19000,
+                               "revenue": 12000
+                             }
+                           },
+                           {
+                             "range": "Feb-2",
+                             "count": {
+                               "cost": 20000,
+                               "revenue": 12000
+                             }
+                           },
+                           {
+                             "range": "Feb-3",
+                             "count": {
+                               "cost": 10000,
+                               "revenue": 8000
+                             }
+                           }
+                         ]
+                      }
 
 function updateDateRangeText() {
     var text = '';
@@ -179,7 +158,7 @@ function getData() {
               contentType: 'application/json', // 設定 content type 為 JSON
               success: function(response) {
                 console.log('Response:', JSON.stringify(response, null, 2));
-                dataForResponse = response
+//                dataForResponse = response
                 dataResponse()
               },
               error: function(xhr, status, error) {
