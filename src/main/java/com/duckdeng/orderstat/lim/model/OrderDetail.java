@@ -11,4 +11,6 @@ public class OrderDetail {
     private String orderId;
     private Map<String, Integer> orderItem;
     private int totalAmount;
+    private int discount;
+    private String remark;
 }
