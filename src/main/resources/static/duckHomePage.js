@@ -158,7 +158,7 @@ function getData() {
               contentType: 'application/json', // 設定 content type 為 JSON
               success: function(response) {
                 console.log('Response:', JSON.stringify(response, null, 2));
-//                dataForResponse = response
+                dataForResponse = response
                 dataResponse()
               },
               error: function(xhr, status, error) {
