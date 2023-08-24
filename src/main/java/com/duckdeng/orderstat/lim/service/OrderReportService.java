@@ -181,7 +181,18 @@ public class OrderReportService {
 
     private String getDateFromOrderId(String orderId, String dataRangeType) {
         return switch (dataRangeType) {
-            case "week" -> "week";
+            case "week" -> {
+                Calendar calendar = Calendar.getInstance();
+
+                int year = 2000 + Integer.parseInt(orderId.substring(0, 3));
+                int month = Integer.parseInt(orderId.substring(3, 5)) - 1;
+                int day = Integer.parseInt(orderId.substring(5, 7));
+
+                calendar.set(year, month, day);
+
+                int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
+                yield String.format("%02d", weekNumber);
+            }
             case "month" -> orderId.substring(1, 5);
             case "year" -> orderId.substring(1, 3);
             default -> throw new IllegalArgumentException("Invalid dataRangeType");
