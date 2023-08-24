@@ -100,6 +100,7 @@ public class OrderReportService {
 
     public ReportData getReportDataRevenueAndCost(String startDate, String endDate, String dataRangeType) throws ExecutionException, InterruptedException {
         ReportData reportData = new ReportData();
+
         // Step 1: 取得日期範圍內的訂單
         Map<String, List<OrderDetail>> orderDetailsMap = orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
         List<OrderDetail> orderDetails = orderDetailsMap.get("orderDtl");
@@ -112,7 +113,7 @@ public class OrderReportService {
 
         // Step 3: 新增一個map，裡面是訂單資料，依照日期進行分組相加，並轉化為訂單總成本
         Map<String, Map<String, Integer>> orderDetailsItemsGroupByDateMap = groupAndAggregate(orderDetails, dataRangeType);
-        // 將訂單資料變成流，取出每個map。用訂單裡面的東西作為key去菜單裡尋找，
+        // 將訂單資料變成流，取出每個map。用訂單裡面的品項，作為key去菜單裡尋找。
         Map<String, Map<String, Integer>> orderCostByDateMap = orderDetailsItemsGroupByDateMap.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
