@@ -23,6 +23,8 @@ public class OrderReportController {
                                                  @RequestParam String endDate,
                                                  @RequestParam String dataRangeType,
                                                  @RequestParam String itemType) throws ExecutionException, InterruptedException {
-        return orderReportService.getReportDataByDateAndType(startDate, endDate, dataRangeType, itemType);
+        return "itemCost".equals(itemType)
+                ? orderReportService.getReportDataRevenueAndCost(startDate, endDate, dataRangeType)
+                : orderReportService.getReportDataByDateAndType(startDate, endDate, dataRangeType, itemType);
     }
 }

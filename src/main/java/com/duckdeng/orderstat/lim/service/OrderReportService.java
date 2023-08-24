@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -41,18 +39,16 @@ public class OrderReportService {
         Map<String, List<OrderItems>> orderItemsMap = orderItemsService.getAllOrderItems();
         List<OrderItems> orderItems = orderItemsMap.get("menuDtl");
 
-        // Step 3: 用dataRangeType值幫菜單進行分組
-        Map<String, List<String>> orderGroupByField = orderItems.stream()
-                .filter(item -> getValueByField(item, itemType) != null)
-                .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
-                        Collectors.mapping(OrderItems:: getItemId, Collectors.toList())));
+        // Step 3: 新增一個map，裡面是訂單資料依照日期進行分組相加
+        Map<String, Map<String, Integer>> orderDetailsItemsGroupByDate = groupAndAggregate(orderDetails, dataRangeType);
 
-        // Step 4: 新增一個map，裡面是訂單資料依照日期進行分組相加
-        Map<String, Map<String, Integer>> detailGroupByDate;
-        detailGroupByDate = groupAndAggregate(orderDetails, dataRangeType);
+        // Step 4: 用itemType值幫菜單進行分組
+        Map<String, List<String>> orderGroupByField = orderItems.stream()
+                    .filter(item -> getValueByField(item, itemType) != null)
+                    .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
+                            Collectors.mapping(OrderItems::getItemId, Collectors.toList())));
 
         // Step 5: 將依照烹飪方式分類的菜單Map，跟依日期分類的訂單map進行整合
-
         // 5-1. 將菜單對應的屬性做成一張map
         Map<String, String> itemIdToTypeMap = new HashMap<>();
         for (Map.Entry<String, List<String>> entry : orderGroupByField.entrySet()) {
@@ -66,7 +62,7 @@ public class OrderReportService {
         // 5-2. 將分類好的訂單跟菜單開始做對照，做出一個新的map
         Map<String, Map<String, Integer>> transformedGroupedData = new HashMap<>();
 
-        for (Map.Entry<String, Map<String, Integer>> entry : detailGroupByDate.entrySet()) {
+        for (Map.Entry<String, Map<String, Integer>> entry : orderDetailsItemsGroupByDate.entrySet()) {
             String date = entry.getKey();
             Map<String, Integer> itemCounts = entry.getValue();
 
@@ -102,6 +98,68 @@ public class OrderReportService {
         return reportData;
     }
 
+    public ReportData getReportDataRevenueAndCost(String startDate, String endDate, String dataRangeType) throws ExecutionException, InterruptedException {
+        ReportData reportData = new ReportData();
+        // Step 1: 取得日期範圍內的訂單
+        Map<String, List<OrderDetail>> orderDetailsMap = orderDetailService.getMultiOrderDetailByDate(startDate, endDate);
+        List<OrderDetail> orderDetails = orderDetailsMap.get("orderDtl");
+
+        // Step 2: 取得所有菜單，並將菜單轉為ID與Cost對應的Map
+        Map<String, List<OrderItems>> orderItemsMap = orderItemsService.getAllOrderItems();
+        List<OrderItems> orderItems = orderItemsMap.get("menuDtl");
+        Map<String, Integer> itemIdToCostMap = orderItems.stream()
+                .collect(Collectors.toMap(OrderItems::getItemId, OrderItems::getItemCost));
+
+        // Step 3: 新增一個map，裡面是訂單資料，依照日期進行分組相加，並轉化為訂單總成本
+        Map<String, Map<String, Integer>> orderDetailsItemsGroupByDateMap = groupAndAggregate(orderDetails, dataRangeType);
+        // 將訂單資料變成流，取出每個map。用訂單裡面的東西作為key去菜單裡尋找，
+        Map<String, Map<String, Integer>> orderCostByDateMap = orderDetailsItemsGroupByDateMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> {
+                            int totalCost = entry.getValue().entrySet().stream()
+                                    .filter(itemEntry -> itemIdToCostMap.containsKey(itemEntry.getKey()))
+                                    .mapToInt(itemEntry -> itemEntry.getValue() * itemIdToCostMap.get(itemEntry.getKey()))
+                                    .sum();
+                            Map<String, Integer> costMap = new HashMap<>();
+                            costMap.put("cost", totalCost);
+                            return costMap;
+                        }
+                ));
+
+        // Step 4: 新增另一個map，裡面是訂單總金額，依照日期進行分組相加
+        Map<String, Map<String, Integer>> orderRevenueByDateMap = orderDetails.stream()
+                .collect(Collectors.groupingBy((OrderDetail detail) -> getDateFromOrderId(detail.getOrderId(),dataRangeType),
+                        Collector.of(HashMap<String, Integer>::new,this::aggregateOrderDetailsValue,this::combineMaps)));
+
+        // Step 5: 將兩個整理好的map進行組合，並轉為List
+        Map<String, Map<String, Integer>> finalResultMap = new HashMap<>();
+        orderCostByDateMap.forEach((date, costMap) -> {
+            finalResultMap.computeIfAbsent(date, k -> new HashMap<>()).putAll(costMap);
+        });
+        orderRevenueByDateMap.forEach((date, revenueMap) -> {
+            finalResultMap.computeIfAbsent(date, k -> new HashMap<>()).putAll(revenueMap);
+        });
+
+        List<CountDetail> countDetails = finalResultMap.entrySet().stream()
+                .map(entry -> {
+                    CountDetail detail = new CountDetail();
+                    detail.setRange(entry.getKey());
+                    detail.setCount(entry.getValue());
+                    return detail;
+                })
+                .toList();
+
+        // Step 6: 直接宣告類別 ItemType: revenue和cost
+        Set<String> set = Set.of("revenue", "cost");
+
+        reportData.setItemType(set);
+        reportData.setRangeType(dataRangeType);
+        reportData.setCountDtl(countDetails);
+
+        return reportData;
+    }
+
     private String getValueByField(OrderItems item, String fieldName) {
         try {
             Field field = OrderItems.class.getDeclaredField(fieldName);
@@ -116,7 +174,7 @@ public class OrderReportService {
         return orderDetails.stream()
                 .collect(Collectors.groupingBy((OrderDetail detail) -> getDateFromOrderId(detail.getOrderId(),dataRangeType),
                         Collector.of(HashMap<String, Integer>::new,
-                                this::aggregateOrderItems,
+                                this::aggregateOrderDetailsItems,
                                 this::combineMaps)));
     }
 
@@ -130,8 +188,12 @@ public class OrderReportService {
     }
 
     // 將當前訂單的商品數量加入到結果Map中
-    private void aggregateOrderItems(Map<String, Integer> resultMap, OrderDetail detail) {
+    private void aggregateOrderDetailsItems(Map<String, Integer> resultMap, OrderDetail detail) {
         detail.getOrderItem().forEach((key, value) -> resultMap.merge(key, value, Integer::sum));
+    }
+
+    private void aggregateOrderDetailsValue(Map<String, Integer> resultMap, OrderDetail detail) {
+        resultMap.merge("revenue", detail.getTotalAmount(), Integer::sum);
     }
 
     // 合併兩個Map的數量
@@ -145,4 +207,5 @@ public class OrderReportService {
         orderItems.setItemId(document.getId());
         return orderItems;
     }
+
 }
