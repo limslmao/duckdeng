@@ -1,16 +1,11 @@
-cardCreateCount = 0
-$(function(){
-  $('#createSheet').on('click', function(event) {
-    event.preventDefault();
-    cardCreate()
-    getData();
-  });
-  $('#dateRange').on('change', function(event) {
-      event.preventDefault(); // Prevent the default link navigation
-      updateDateRangeText(); // Call your function
-    });
-});
+/*  current API used: GET/api/orderReports    */
+/*  main function: report by menu type        */
+/*  version record:                           */
+/*  --date--   --name--    --event--          */
+/*  2023/08/25   Arte      codeReview         */
+/*                                            */
 
+let cardCreateCount = 0 // 建立了幾張圖表
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -24,14 +19,14 @@ const orderConvert = {
   'hand': '手扒',
   'cost':'成本',
   'revenue':'收益'
-};
-const dataForCondition = {//給他的
+};//所有type value 的翻譯
+const queryRequestJson = {
      startDate: "20230211",
      endDate: "20230811",
      rangeType: "week",//week,month,year
      type: "itemIngred"//itemIngred itemUnit itemCookMethod itemSpicy
-}
-let dataForResponse = {
+} //request body
+let queryResponseJson = {
                          "itemType": [
                               "revenue",
                               "cost"
@@ -88,10 +83,20 @@ let dataForResponse = {
                              }
                            }
                          ]
-                      }
-
+                      } // response body
+$(function(){
+  $('#createSheet').on('click', function(event) {
+    event.preventDefault();
+    reportCardCreate()
+    getReportData();
+  });
+  $('#dateRange').on('change', function(event) {
+      event.preventDefault(); // Prevent the default link navigation
+      updateDateRangeText(); // Call your function
+    });
+});
 function updateDateRangeText() {
-    var text = '';
+    let text = '';
     switch ($('#dateRange').val()) {
         case 'week':
             text = '(範圍:這半年每周)';
@@ -109,121 +114,125 @@ function updateDateRangeText() {
     $('#range').text(text)
 }
 function getStartDateAndEndDate(dateRange) {
-  var today = new Date();
-  var startDate, endDate;
-
+  let today = new Date();
+  let startDate, endDate;
   if (dateRange === 'week') {
-    var halfYearAgo = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
+    let halfYearAgo = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
     startDate = halfYearAgo;
     endDate = today;
   } else if (dateRange === 'month') {
-    var startOfYear = new Date(today.getFullYear(), 0, 1);
-    var endOfYear = new Date(today.getFullYear(), 11, 31);
+    let startOfYear = new Date(today.getFullYear(), 0, 1);
+    let endOfYear = new Date(today.getFullYear(), 11, 31);
     startDate = startOfYear;
     endDate = endOfYear;
   } else if (dateRange === 'year') {
-    var fiveYearsAgo = new Date(today.getFullYear() - 4, 0, 1);
-    var endOfYear = new Date(today.getFullYear(), 11, 31);
+    let fiveYearsAgo = new Date(today.getFullYear() - 4, 0, 1);
+    let endOfYear = new Date(today.getFullYear(), 11, 31);
     startDate = fiveYearsAgo;
     endDate = endOfYear;
   }
-
-  var formattedStartDate = formatDateToYYYYMMDD(startDate);
-  var formattedEndDate = formatDateToYYYYMMDD(endDate);
-
+  let formattedStartDate = formatDateToYYYYMMDD(startDate);
+  let formattedEndDate = formatDateToYYYYMMDD(endDate);
   return {
     startDate: formattedStartDate,
     endDate: formattedEndDate
   };
 }
 function formatDateToYYYYMMDD(date) {
-    var year = date.getFullYear();
-    var month = (date.getMonth() + 1).toString().padStart(2, '0');
-    var day = date.getDate().toString().padStart(2, '0');
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
     return year  + month  + day;
 }
-function getData() {
-    $('#createSheet').prop('disabled', true);
-    $('#loading').attr('hidden', false);
-    dateRange = $('#dateRange').val();
-    dateType = $('#dateType').val();
-    var weekDateRange = getStartDateAndEndDate(dateRange);
-    dataForCondition.startDate =  weekDateRange.startDate;
-    dataForCondition.endDate =  weekDateRange.endDate;
-    dataForCondition.rangeType =  dateRange;
-    dataForCondition.type = dateType;
-     $.ajax({
-              type: 'GET',
-              url: '/api/orderReports?startDate='+dataForCondition.startDate+'&endDate='+dataForCondition.endDate+'&dataRangeType='+dataForCondition.rangeType+'&itemType='+dataForCondition.type+'',
-              contentType: 'application/json', // 設定 content type 為 JSON
-              success: function(response) {
-                console.log('Response:', JSON.stringify(response, null, 2));
-                dataForResponse = response
-                dataResponse()
-              },
-              error: function(xhr, status, error) {
-                console.log('Error:', error);
-              }
-            });
+function getReportData() {
+    htmlControl('getData');
+    let dateRange = $('#dateRange').val();
+    let dateType = $('#dateType').val();
+    let weekDateRange = getStartDateAndEndDate(dateRange);
+    queryRequestJson.startDate =  weekDateRange.startDate;
+    queryRequestJson.endDate =  weekDateRange.endDate;
+    queryRequestJson.rangeType =  dateRange;
+    queryRequestJson.type = dateType;
+    $.ajax({
+             type: 'GET',
+             url: '/api/orderReports?startDate='+queryRequestJson.startDate+'&endDate='+queryRequestJson.endDate+'&dataRangeType='+queryRequestJson.rangeType+'&itemType='+queryRequestJson.type+'',
+             contentType: 'application/json', // 設定 content type 為 JSON
+             success: function(response) {
+               console.log('Response:', JSON.stringify(response, null, 2));
+               queryResponseJson = response
+               dataResponse()
+             },
+             error: function(xhr, status, error) {
+               console.log('Error:', error);
+             }
+           });
+}
+function htmlControl(action) {
+    switch (action) {  // 注意这里的 switch 关键字
+        case 'getData':
+            $('#createSheet').prop('disabled', true);
+            $('#loading').attr('hidden', false);
+            break;
+        case 'chartCreateDone':
+            $('#loading').attr('hidden', true);
+            $('#createSheet').prop('disabled', false);
+            break;
+        default:
+            break;
+    }
 }
 function dataResponse() {
-    var countDtl = dataForResponse.countDtl;
-    var countObject = dataForResponse.countDtl[0].count; // 获取 count 对象
-//    var dataKey = Object.keys(countObject); // 获取 count 对象的所有键
-    var dataKey =  dataForResponse.itemType;
-    var dataX = [];
-    var dataCounts = [];
-    var dataPerson = [];
-    var dataCosts = [];
-    for (var i = 0; i < countDtl.length; i++) {
-        dataX.push(countDtl[i].range);
-        var countData = [];
-        var costData = [];
-        for (var j = 0; j < dataKey.length; j++) {
-            dataValue = countDtl[i].count[dataKey[j]] || 0
-            countData.push(dataValue);
-//            dataValue = countDtl[i].cost[dataKey[j]] || 0
+    let countDtl = queryResponseJson.countDtl;
+    let dataKeyList =  queryResponseJson.itemType; //取得種類
+    let dataXaxisList = [];
+    let reportCountList = [];//[[]]
+    let reportCountPersonList = [];//[[]]
+    let reportCostList = [];//暫時沒用到
+    for (let i = 0; i < countDtl.length; i++) {
+        dataXaxisList.push(countDtl[i].range);
+        let countDataList = [];
+//        let costData = [];
+        for (let j = 0; j < dataKeyList.length; j++) {
+            dataValue = countDtl[i].count[dataKeyList[j]] || 0
+            countDataList.push(dataValue);
+//            dataValue = countDtl[i].cost[dataKeyList[j]] || 0
 //            costData.push(dataValue/100);
         }
-        dataCounts.push(countData);
-        console.log(dataCounts)
-        dataCosts.push(costData);
+        reportCountList.push(countDataList);
+//        reportCostList.push(costData);
     }
-    dataPerson = calculatePerson(dataCounts)
-    chart(dataX, dataCounts, dataKey, dataPerson);
-
-//    chart(dataX, dataCounts, dataKey, dataPerson,dataCosts);
+    reportCountPersonList = calculatePerson(reportCountList)
+    chart(dataXaxisList, reportCountList, dataKeyList, reportCountPersonList);
+//    chart(dataXaxisList, reportCountList, dataKeyList, reportCountPersonList,reportCostList);
 }
-function calculatePerson(dataCounts) {
-      var dataPerson = [];
-      var personData = [];
-      var sum = 0;
-      var value = 0;
-      for(var i = 0; i < dataCounts.length; i++) {
-        personData = [];
-        sum = 0
-        value = 0;
-        for(var j = 0; j < dataCounts[i].length; j++) {
-          sum += dataCounts[i][j]
+function calculatePerson(reportCountList) {
+      let reportCountPersonList = [];
+      let countPersonList = [];
+      for(let i = 0; i < reportCountList.length; i++) {
+        personDataList = [];
+        let rangeReportSum = 0;
+        let reportPersonValue = 0; 
+        for(let j = 0; j < reportCountList[i].length; j++) {
+          rangeReportSum += reportCountList[i][j]
         }
-        for(var z = 0; z < dataCounts[i].length; z++) {
-            value =  Math.round((dataCounts[i][z]/sum) *100)
-            personData.push(value)
+        for(let z = 0; z < reportCountList[i].length; z++) {
+            reportPersonValue =  Math.round((reportCountList[i][z]/rangeReportSum) *100) 
+            personDataList.push(reportPersonValue)
         }
-        dataPerson.push(personData)
+        reportCountPersonList.push(personDataList)
       }
-      return dataPerson
+      return reportCountPersonList
 }
-function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
-    var barChartCanvas = $('#barChart-' + cardCreateCount).get(0).getContext('2d');
-    var axisX = dataX;
-    var datasets = [];
-    var tittle = ""
-    for (var i = 0; i < dataKey.length; i++) {
-        tittle += orderConvert[dataKey[i]] + (i === dataKey.length - 1 ? "" : ",");
-        var color = `rgba(${(i * 47) % 255}, ${(i * 71) % 255}, ${(i * 113) % 255}, 0.9)`;
+function chart(dataXaxisList, reportCountList, dataKeyList, reportCountPersonList,reportCostList) {
+    let barChartCanvas = $('#barChart-' + cardCreateCount).get(0).getContext('2d');
+    let axisX = dataXaxisList;
+    let datasets = [];
+    let cardTittle = ""
+    for (let i = 0; i < dataKeyList.length; i++) {
+        cardTittle += orderConvert[dataKeyList[i]] + (i === dataKeyList.length - 1 ? "" : ",");
+        let color = `rgba(${(i * 47) % 255}, ${(i * 71) % 255}, ${(i * 113) % 255}, 0.9)`;
         datasets.push({
-            label: orderConvert[dataKey[i]],
+            label: orderConvert[dataKeyList[i]],
             backgroundColor: color,
             borderColor: 'rgba(60,141,188,0.8)',
             pointRadius: false,
@@ -231,16 +240,15 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
             pointStrokeColor: 'rgba(60,141,188,1)',
             pointHighlightFill: '#fff',
             pointHighlightStroke: 'rgba(60,141,188,1)',
-            data: dataCounts.map(countData => countData[i]),
+            data: reportCountList.map(countDataList => countDataList[i]),
         });
     }
-    console.log(datasets)
-    $('#title-' + cardCreateCount).text(tittle)
-    var data = {
+    $('#title-' + cardCreateCount).text(cardTittle)
+    let data = {
         labels: axisX,
         datasets: datasets
     };
-    var options = {
+    let options = {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -259,29 +267,29 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                             var label = context.dataset.label || '';
-                             var dataIndex = context.dataIndex;
-                             var value = dataPerson[dataIndex][context.datasetIndex] + '%';
+                             let label = context.dataset.label || '';
+                             let dataIndex = context.dataIndex;
+                             let value = reportCountPersonList[dataIndex][context.datasetIndex] + '%';
                              return label + ': ' + value;
                         }
                     }
                 },
              }
         }
-    var barChart = new Chart(barChartCanvas, {
+    let barChart = new Chart(barChartCanvas, {
         data: data,
         type: 'bar',
         options: options
 
     });
-//    let dataX_2 = [];
-//    for (let i = 0; i < dataX.length; i++) {
-//        for (let j = 0; j < dataKey.length; j++)
-//        dataX_2.push(dataKey[j]);
+//    let dataXaxisList_2 = [];
+//    for (let i = 0; i < dataXaxisList.length; i++) {
+//        for (let j = 0; j < dataKeyList.length; j++)
+//        dataXaxisList_2.push(dataKeyList[j]);
 //    }
 //    // 更新折线图的数据集
 //    let dataLine = {
-//        labels: dataX_2,
+//        labels: dataXaxisList_2,
 //        datasets: [20, 10, 20, 40, 45, 50, 90, 80, 48, 44, 45, 45, 48, 12, 14, 54, 80]  // 将折线图数据集对象放入数组中
 //    };
 //      let lineDataset = {
@@ -297,29 +305,27 @@ function chart(dataX, dataCounts, dataKey, dataPerson,dataCosts) {
 //
 //    // 更新 barChart
 //    barChart.update();
-
-    $('#loading').attr('hidden', true);
-    $('#createSheet').prop('disabled', false);
+    htmlControl('chartCreateDone')
 }
 
 
-function cardCreate() {
+function reportCardCreate() {
     cardCreateCount ++
-    var cardHtml = $('<div class="card card-success">'); // 创建一个包含 card 样式的 div 元素
+    let cardHtml = $('<div class="card card-success">'); // 创建一个包含 card 样式的 div 元素
     // 创建 card-header 部分
-    var cardHeader = $('<div class="card-header">');
-    var cardTitle = $('<h3 class="card-title" id="title-'+cardCreateCount+'">等待搜尋中...</h3>');
-    var cardTools = $('<div class="card-tools">');
-    var collapseButton = $('<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>');
-    var cleanButton = $('<button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>');
+    let cardHeader = $('<div class="card-header">');
+    let cardTitle = $('<h3 class="card-title" id="title-'+cardCreateCount+'">等待搜尋中...</h3>');
+    let cardTools = $('<div class="card-tools">');
+    let collapseButton = $('<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>');
+    let cleanButton = $('<button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>');
     cardTools.append(collapseButton);
     cardTools.append(cleanButton);
     cardHeader.append(cardTitle);
     cardHeader.append(cardTools);
     // 创建 card-body 部分
-    var cardBody = $('<div class="card-body">');
-    var chartContainer = $('<div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div></div></div><div class="chartjs-size-monitor-shrink"><div></div></div></div>');
-    var canvas = $('<canvas id="barChart-'+cardCreateCount+'" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 708px;" width="1062" height="375" class="chartjs-render-monitor"></canvas>');
+    let cardBody = $('<div class="card-body">');
+    let chartContainer = $('<div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div></div></div><div class="chartjs-size-monitor-shrink"><div></div></div></div>');
+    let canvas = $('<canvas id="barChart-'+cardCreateCount+'" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 708px;" width="1062" height="375" class="chartjs-render-monitor"></canvas>');
     chartContainer.append(canvas);
     cardBody.append(chartContainer);
     // 将所有部分添加到 cardHtml 中

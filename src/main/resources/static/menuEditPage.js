@@ -1,4 +1,38 @@
-let initJson = {
+/*  current API used: GET,POST,PUT,DELETE/api/orderItems    */
+/*  main function: menu CRUD                  */
+/*  version record:                           */
+/*  --date--   --name--    --event--          */
+/*  2023/08/25   Arte      codeReview         */
+/*                                            */
+
+const orderConvert = {
+  'duck': '鴨',
+  'chicken': '雞',
+  'full': '全支',
+  'half': '半支',
+  'N': '無香鍋',
+  'Y': '有香鍋麻辣',
+  'two': '兩吃',
+  'saute': '剁炒',
+  'cut': '剁盤',
+  'hand': '手扒',
+  'main':'主菜',
+  'add':'加購',
+  'null':'--',
+};
+const insertAndUpdateRequestJson = {};
+const $updateRowDefault = {
+     itemId:"",
+     price:650,
+     itemType:"main",
+     itemIngred:"duck",
+     itemUnit:"full",
+     itemSpicy:"Y",
+     itemCookMethod:"two",
+     note:"蔥爆牛肉",
+     itemCost:50
+};
+let queryResponseJson = {
                  "menuDtl": [
                    {
                      "itemId":"001",
@@ -23,104 +57,84 @@ let initJson = {
                      "itemCost": 50
                    }
                  ]
-               }
-const orderConvert = {
-  'duck': '鴨',
-  'chicken': '雞',
-  'full': '全支',
-  'half': '半支',
-  'N': '無香鍋',
-  'Y': '有香鍋麻辣',
-  'two': '兩吃',
-  'saute': '剁炒',
-  'cut': '剁盤',
-  'hand': '手扒',
-  'main':'主菜',
-  'add':'加購',
-  'null':'--',
-};
-const insertDataForm = {};
-const updateDataFrom = {
-     itemId:"",
-     price:650,
-     itemType:"main",
-     itemIngred:"duck",
-     itemUnit:"full",
-     itemSpicy:"Y",
-     itemCookMethod:"two",
-     note:"蔥爆牛肉",
-     itemCost:50
-};
+               }//orderItems
 let buttonClick = ""
 let updateHtml = ""
+let clickItemId = ""
+let createItemName = ""
 $(function(){
-    getData()
-    $('#addItem').on('click', addMenuItem);
+    getMenuData()
+    $('#addItem').on('click', function() {
+        buttonClick = 'create';
+        menuItemInputHtmlCreate();
+    });
     $('#tableBody').on('click', '.cancel-button', function() {
         cancelItemAdd()
     });
     $('#tableBody').on('click', '.confirm-button', function() {
-        confirmItemAdd()
+        if (buttonClick == 'create'){
+            $updateRowDefault.note = $('#itemName').val();
+        }
+        modalHtmlCreate();
     });
     $('#tableBody').on('click', '.deleteData', function() {
-        const itemId = $(this).closest('tr').find('#itemIdForTd').text();
-        deleteData(itemId)
+        $updateRowDefault.itemId = $(this).closest('tr').find('#itemIdForTd').text();
+        $updateRowDefault.note = $(this).closest('tr').find('#itemNameForTd').text();
+        buttonClick = 'delete';
+        modalHtmlCreate();
     });
     $('#tableBody').on('click', '.updateData', function() {
-    updateDataFrom.itemId = $(this).closest('tr').find('#itemIdForTd').text();
-    updateDataFrom.note = $(this).closest('tr').find('#itemNameForTd').text();
-    updateDataFrom.price = $(this).closest('tr').find('#itemPriceForTd').text();
-    updateDataFrom.itemType = $(this).closest('tr').find('#itemTypeForTd').text();
-    updateDataFrom.itemUnit= $(this).closest('tr').find('#itemUnitForTd').text();
-    updateDataFrom.itemIngred= $(this).closest('tr').find('#itemIngredForTd').text();
-    updateDataFrom.itemCookMethod= $(this).closest('tr').find('#itemCookMethodForTd').text();
-    updateDataFrom.itemSpicy = $(this).closest('tr').find('#itemSpCheckForTd').text();
-    updateDataFrom.itemCost = $(this).closest('tr').find('#itemCostForTd').text();
-    updateHtml =  $(this).closest('tr')
-    updateHtml.remove()
-    updateData()
+        buttonClick = 'update';
+        $updateRowDefault.itemId = $(this).closest('tr').find('#itemIdForTd').text();
+        $updateRowDefault.note = $(this).closest('tr').find('#itemNameForTd').text();
+        $updateRowDefault.price = $(this).closest('tr').find('#itemPriceForTd').text();
+        $updateRowDefault.itemType = $(this).closest('tr').find('#itemTypeForTd').text();
+        $updateRowDefault.itemUnit= $(this).closest('tr').find('#itemUnitForTd').text();
+        $updateRowDefault.itemIngred= $(this).closest('tr').find('#itemIngredForTd').text();
+        $updateRowDefault.itemCookMethod= $(this).closest('tr').find('#itemCookMethodForTd').text();
+        $updateRowDefault.itemSpicy = $(this).closest('tr').find('#itemSpCheckForTd').text();
+        $updateRowDefault.itemCost = $(this).closest('tr').find('#itemCostForTd').text();
+        updateHtml =  $(this).closest('tr')
+        updateHtml.remove()
+        updateMenu()
+    });
+    $('.modal-footer').on('click', '#itemActionBtn', function() {
+        switch (buttonClick) {
+            case 'delete':
+                deleteMenuData($updateRowDefault.itemId);
+                break;
+           case 'update':
+           case 'create':  // 分别列出两个条件
+             confirmItemAdd();
+             break;
+         }
     });
 });
-function deleteData(itemId) {
- $.ajax({
-      type: 'DELETE',
-      url: '/api/orderItems/'+itemId+'',
-      success: function(response) {
-        $('#loading').attr('hidden', true);
-        console.log('Response:', JSON.stringify(response, null, 2));
-        location.reload();
-        alert('項目'+itemId+'已成功刪除')
-      },
-      error: function(xhr, status, error) {
-        console.log('Error:', error);
-      }
-    });
- console.log('delete'+itemId)
+function modalHtmlCreate() {
+    let action ='';
+    switch (buttonClick) {
+        case 'delete':
+            action = '刪除';
+            break;
+        case 'update':
+            action = '修改';
+            break;
+        case 'create':
+            action = '新建';
+            break;
+    }
+    $('#itemActionContent').text('是否確定要'+action+$updateRowDefault.note+'');
+    $('#itemActionTittle').text('提示訊息');
+    $('#myModal').modal('show');
 }
-function updateData(itemId) {
+function updateMenu(itemId) {
     $('.updateData, .deleteData').prop('disabled', true);
     buttonClick = "update" ;
-    addMenuItem();
+    menuItemInputHtmlCreate();
 }
-function getData() {
-    $.ajax({
-      type: 'GET',
-      url: '/api/orderItems ',
-      success: function(response) {
-        $('#loading').attr('hidden', true);
-//        console.log('Response:', JSON.stringify(response, null, 2));
-        initJson = response
-        queryItem()
-        $('#addItem').prop('disabled', false);
-      },
-      error: function(xhr, status, error) {
-        console.log('Error:', error);
-      }
-    });
-}
-function queryItem() {
-    for (const item of initJson.menuDtl) {
-        var newRow = $('<tr>');
+function menuItemHtmlCreate() {
+    for (const item of queryResponseJson.menuDtl) {
+        let newRow = $('<tr>');
         newRow.append('<td id = "itemIdForTd">' + item.itemId + '</td>');
         newRow.append('<td id = "itemNameForTd">' + item.note + '</td>');
         newRow.append('<td id = "itemPriceForTd">' + item.price + '</td>');
@@ -134,22 +148,20 @@ function queryItem() {
         $('#tableBody').append(newRow);
     }
 }
-function addMenuItem() {
+function menuItemInputHtmlCreate() {
     $('#addItem').prop('disabled', true);
-    var newRow = $('<tr id="createItem">');
+    let newRow = $('<tr id="createItem">');
     newRow.append('<td id = "tdItemId" >新增後產生</td>');
     newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName"></td>');
     newRow.append('<td><input type="number" class="form-control" placeholder="請輸入品項金額" id="itemPrice"></td>');
-    var itemTypeSelect = $('<select class="form-select" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select>');
-    var itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
-    var itemUnitSelect = $('<select class="form-select" id="itemUnit"><option value="half">半隻</option><option value="full">全隻</option></select>');
-    var itemCookMethodSelect = $('<select class="form-select" id="itemCookMethod"><option value="two">兩吃</option><option value="saute">剁炒</option><option value="cut">剁盤</option><option value="hand">手扒</option><option value="else">其他</option></select>');
-    var itemSpCheckInput = $('<input class="custom-checkbox" type="checkbox" id="itemSpCheck" >');
-
-
+    let itemTypeSelect = $('<select class="form-select" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select>');
+    let itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
+    let itemUnitSelect = $('<select class="form-select" id="itemUnit"><option value="half">半隻</option><option value="full">全隻</option></select>');
+    let itemCookMethodSelect = $('<select class="form-select" id="itemCookMethod"><option value="two">兩吃</option><option value="saute">剁炒</option><option value="cut">剁盤</option><option value="hand">手扒</option><option value="else">其他</option></select>');
+    let itemSpCheckInput = $('<input class="custom-checkbox" type="checkbox" id="itemSpCheck" >');
     // Disable fields when 加購 option is selected
     itemTypeSelect.on('change', function() {
-        var isAddOptionSelected = $(this).val() === 'add';
+        let isAddOptionSelected = $(this).val() === 'add';
         itemIngredSelect.prop('disabled', isAddOptionSelected);
         itemUnitSelect.prop('disabled', isAddOptionSelected);
         itemCookMethodSelect.prop('disabled', isAddOptionSelected);
@@ -170,15 +182,15 @@ function addMenuItem() {
     newRow.append('<td><button class="btn btn-primary cancel-button">取消</button> <button class="btn btn-primary confirm-button">確定</button></td>');
     $('#tableBody').append(newRow);
     if (buttonClick == 'update') {
-        $('#tdItemId').text(updateDataFrom.itemId );
-        $('#itemName').val(updateDataFrom.note );
-        $('#itemPrice').val(updateDataFrom.price );
-        $('#itemType').val(findKeyByValue(orderConvert, updateDataFrom.itemType) );//轉回英文
-        $('#itemIngred').val(findKeyByValue(orderConvert, updateDataFrom.itemIngred)  );
-        $('#itemUnit').val(findKeyByValue(orderConvert, updateDataFrom.itemUnit) );
-        $('#itemCookMethod').val(findKeyByValue(orderConvert, updateDataFrom.itemCookMethod ) );
-        $('#itemSpCheck').prop('checked', findKeyByValue(orderConvert,updateDataFrom.itemSpicy) === 'Y' ? true : false);
-        $('#itemCost').val(updateDataFrom.itemCost);
+        $('#tdItemId').text($updateRowDefault.itemId );
+        $('#itemName').val($updateRowDefault.note );
+        $('#itemPrice').val($updateRowDefault.price );
+        $('#itemType').val(findKeyByValue(orderConvert, $updateRowDefault.itemType) );
+        $('#itemIngred').val(findKeyByValue(orderConvert, $updateRowDefault.itemIngred)  );
+        $('#itemUnit').val(findKeyByValue(orderConvert, $updateRowDefault.itemUnit) );
+        $('#itemCookMethod').val(findKeyByValue(orderConvert, $updateRowDefault.itemCookMethod ) );
+        $('#itemSpCheck').prop('checked', findKeyByValue(orderConvert,$updateRowDefault.itemSpicy) === 'Y' ? true : false);
+        $('#itemCost').val($updateRowDefault.itemCost);
     }
 }
 function findKeyByValue(obj, value) {
@@ -189,34 +201,49 @@ function findKeyByValue(obj, value) {
   }
   return null; // 如果找不到對應的鍵，則返回 null 或其他適當的值
 }
-
 function cancelItemAdd() {
     $('.updateData, .deleteData,  #addItem').prop('disabled', false);
     $('#createItem').remove();
     $('#tableBody').append(updateHtml);
 }
-function confirmItemAdd() { //insert update 共用
-    insertDataForm.price = parseFloat($('#itemPrice').val());
-    insertDataForm.itemType = $('#itemType').val();
-    insertDataForm.itemIngred =$('#itemIngred').val();
-    insertDataForm.itemUnit = $('#itemUnit').val();
-    insertDataForm.itemCookMethod = $('#itemCookMethod').val();
-    insertDataForm.itemSpicy = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
-    insertDataForm.itemCost =  $('#itemCost').val();
-    if (insertDataForm.itemType == "add") {
-        insertDataForm.itemSpicy = null
+function confirmItemAdd() {
+    insertAndUpdateRequestJson.price = parseFloat($('#itemPrice').val());
+    insertAndUpdateRequestJson.itemType = $('#itemType').val();
+    insertAndUpdateRequestJson.itemIngred =$('#itemIngred').val();
+    insertAndUpdateRequestJson.itemUnit = $('#itemUnit').val();
+    insertAndUpdateRequestJson.itemCookMethod = $('#itemCookMethod').val();
+    insertAndUpdateRequestJson.itemSpicy = $('#itemSpCheck').prop('checked') ? 'Y' : 'N';
+    insertAndUpdateRequestJson.itemCost =  $('#itemCost').val();
+    if (insertAndUpdateRequestJson.itemType == "add") {
+        insertAndUpdateRequestJson.itemSpicy = null
     }
-    insertDataForm.note = $('#itemName').val();
+    insertAndUpdateRequestJson.note = $('#itemName').val();
     if (buttonClick == "update") {
-        insertDataForm.itemId = updateDataFrom.itemId
-        const orderJsonString = JSON.stringify(insertDataForm);
-        putData(orderJsonString)
+        insertAndUpdateRequestJson.itemId = $updateRowDefault.itemId
+        const orderJsonString = JSON.stringify(insertAndUpdateRequestJson);
+        putMenuData(orderJsonString)
     } else {
-        const orderJsonString = JSON.stringify(insertDataForm);
-        postData(orderJsonString)
+        const orderJsonString = JSON.stringify(insertAndUpdateRequestJson);
+        postMenuData(orderJsonString)
     }
+}//insert update 共用
+function getMenuData() {
+    $.ajax({
+      type: 'GET',
+      url: '/api/orderItems ',
+      success: function(response) {
+        $('#loading').attr('hidden', true);
+//        console.log('Response:', JSON.stringify(response, null, 2));
+        queryResponseJson = response
+        menuItemHtmlCreate()
+        $('#addItem').prop('disabled', false);
+      },
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
+      }
+    });
 }
-function postData(orderJsonString) {
+function postMenuData(orderJsonString) {
     $('#loading').attr('hidden', false);
     $.ajax({
       type: 'POST',
@@ -235,21 +262,35 @@ function postData(orderJsonString) {
       }
     });
 }
-function putData(orderJsonString) {
-console.log(orderJsonString)
+function putMenuData(orderJsonString) {
      $.ajax({
            type: 'PUT',
-           url: '/api/orderItems/'+updateDataFrom.itemId+'',
+           url: '/api/orderItems/'+$updateRowDefault.itemId+'',
            data: orderJsonString,
            contentType: 'application/json',
            success: function(response) {
              $('#loading').attr('hidden', true);
              console.log('Response:', JSON.stringify(response, null, 2));
              location.reload();
-             alert('項目'+updateDataFrom.itemId+'已成功修改')
+             alert('項目'+$updateRowDefault.itemId+'已成功修改')
            },
            error: function(xhr, status, error) {
              console.log('Error:', error);
            }
      });
+}
+function deleteMenuData(itemId) {
+ $.ajax({
+      type: 'DELETE',
+      url: '/api/orderItems/'+itemId+'',
+      success: function(response) {
+        $('#loading').attr('hidden', true);
+        console.log('Response:', JSON.stringify(response, null, 2));
+        location.reload();
+        alert('項目'+itemId+'已成功刪除')
+      },
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
+      }
+    });
 }
