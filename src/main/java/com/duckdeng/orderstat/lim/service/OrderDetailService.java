@@ -29,7 +29,13 @@ public class OrderDetailService {
                     .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
                     .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999").get();
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-            int newNumberOfDocuments = documents.size() + 1;
+
+            String highestOrderID = documents.stream()
+                    .map(QueryDocumentSnapshot::getId)
+                    .max(String::compareTo)
+                    .orElse(datePart + "000");
+
+            int newNumberOfDocuments = Integer.parseInt(highestOrderID.substring(7)) + 1;
             String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
 
             orderDetail.setOrderId(orderItemKey);
