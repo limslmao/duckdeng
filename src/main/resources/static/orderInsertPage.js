@@ -1,3 +1,10 @@
+/*  current API used: POST,/api/orderDetails                */
+/*  main function: orderDtl Insert                          */
+/*  version record:                                         */
+/*  --date--   --name--    --event--                        */
+/*  2023/08/28   Arte      codeReview                       */
+/*                                                          */
+
 const valueToDbConvert = {
   'full_d_two'     :'001',
   'full_d_two_sp'  :'002',

@@ -1,3 +1,9 @@
+/*  current API used: POST/api/orderDetails , GET /api/orderItems                             */
+/*  main function: orderDtl Insert , create Html from menuItem                                */
+/*  version record:                                                                           */
+/*  --date--   --name--    --event--                                                          */
+/*  2023/08/28   Arte      codeReview,insertRequestJson add orderDate key,totalAmount fix     */
+/*                                                                                            */
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -10,7 +16,7 @@ const orderConvert = {
   'cut': '剁盤',
   'hand': '手扒'
 };
-let queryJson = {
+let queryResponseJson = {
  "menuDtl": [
      {
        "itemId": "001",
@@ -22,8 +28,8 @@ let queryJson = {
        "price": 600,
        "note": "全鴨二吃"
      }]
-}
-let insertJson = {
+} // GET /api/orderItems   
+let insertRequestJson = {
  "orderItem": {
      "001": 2,
      "013": 1
@@ -32,29 +38,28 @@ let insertJson = {
    "discount":50,
    "remark":"測試",
    "orderDate":"20230827"
-}
-let labItemId = [];
-let labItemId_Main = [];
+} //POST/api/orderDetails
+let itemId_add = [];
+let itemId_main = [];
 let orderItemsJson = [];
-let totalAmount = '';
+let totalAmount = ''; //總額
 $(function(){
-  $('#orderMenu').on('click', function(event) {
-    event.preventDefault(); // Prevent the default link navigation
-    calculatePrice();
-  });
-  $('#orderFinish').on('click', orderFinish);
-   $('#discountBtn').on('click', discount);
-   getData()
-   insertDate();
+    $('#orderMenu').on('click', function(event) {
+        event.preventDefault(); // Prevent the default link navigation
+        calculatePrice();
+    });
+    $('#orderFinish').on('click', orderFinish);
+    $('#discountBtn').on('click', discount);
+    getOrderItemsData()
+    insertDate();
 });
-function getData() {
+function getOrderItemsData() {
     $.ajax({
       type: 'GET',
       url: '/api/orderItems ',
       success: function(response) {
         $('#loading').attr('hidden', true);
-//        console.log('Response:', JSON.stringify(response, null, 2));
-        queryJson = response;
+        queryResponseJson = response;
         orderItemsParser(response)
         $('#addItem').prop('disabled', false);
       },
@@ -63,64 +68,61 @@ function getData() {
       }
     });
 }
-function orderItemsParser(response) {
+function orderItemsParser(response) { //add,main目前hardCode
             //add
-           const filteredItems = response.menuDtl.filter(item => item.itemType === "add");
-           let labelList = []
-           let labPrice = []
+           const filteredItems = response.menuDtl.filter(item => item.itemType === "add");//過濾出itemType為add的物件
+           let itemNameList_add = []
+           let itemPrice_add = []
            for (let i = 0; i < filteredItems.length; i++) {
-               labelList.push(filteredItems[i].note);
-               labPrice.push(filteredItems[i].price);
-               labItemId.push(filteredItems[i].itemId);
+               itemNameList_add.push(filteredItems[i].note);
+               itemPrice_add.push(filteredItems[i].price);
+               itemId_add.push(filteredItems[i].itemId);
            }
-//           console.log(labelList,labPrice,labItemId);
-           addItemCreate(labelList,labPrice,labItemId)
+           itemHtmlCreate_add(itemNameList_add,itemPrice_add,itemId_add)
            // main
-           const filteredItems_Main = response.menuDtl.filter(item => item.itemType === "main");
-           let labelList_Main = []
-           let labPrice_Main = []
-           let labIngred_Main = []
+           const filteredItems_main = response.menuDtl.filter(item => item.itemType === "main");
+           let itemNameList_main = []
+           let itemPrice_main = []
+           let labIngred_main = []
 
-           for (let i = 0; i < filteredItems_Main.length; i++) {
-               labelList_Main.push(filteredItems_Main[i].note);
-               labPrice_Main.push(filteredItems_Main[i].price);
-               labItemId_Main.push(filteredItems_Main[i].itemId);
-               labIngred_Main.push(filteredItems_Main[i].itemIngred);
+           for (let i = 0; i < filteredItems_main.length; i++) {
+               itemNameList_main.push(filteredItems_main[i].note);
+               itemPrice_main.push(filteredItems_main[i].price);
+               itemId_main.push(filteredItems_main[i].itemId);
+               labIngred_main.push(filteredItems_main[i].itemIngred);//目前hardCode設定html只有雞,鴨
            }
 
-           mainItemCreate(labelList_Main,labPrice_Main,labItemId_Main,labIngred_Main)
-           labIngred_Main = new Set(labIngred_Main);
-           mainItemTittleCreate(labIngred_Main)
-//           console.log(labelList_Main,labPrice_Main,labItemId_Main,labIngred_Main);
+           itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIngred_main)
+//           labIngred_main = new Set(labIngred_main);
+//           itemTittleCreate_main(labIngred_main)
 }
-function addItemCreate(labelList,labPrice,labItemId) {
-addItemHtml = $("#addItem")
-addItemLab = ''
-for (i=0;i<labelList.length;i++) {
-    addItemLab += '<div class="col-3"> <label>'+labelList[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+labPrice[i]+'" id = "'+labItemId[i]+'"> </div>'
-} // id還沒設
-addItemHtml.append(addItemLab)
+function itemHtmlCreate_add(itemNameList,itemPrice,itemId_add) {
+    itemHtml_add = $("#addItem")
+    itemLab_add = ''
+    for (i=0;i<itemNameList.length;i++) {
+        itemLab_add += '<div class="col-3"> <label>'+itemNameList[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>'
+    } // id還沒設
+    itemHtml_add.append(itemLab_add)
 }
-function mainItemTittleCreate(labIngred_Main) {} //暫時不做
-function mainItemCreate(labelList_Main,labPrice_Main,labItemId_Main,labIngred_Main){
-    chickenItemHtml = $('#chickenItem')
-    duckItemHtml = $('#duckItem')
-    for (i=0;i<labelList_Main.length;i++) {
-        mainItemLab = '<div class="col-3"> <label>'+labelList_Main[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+labPrice_Main[i]+'" id = "'+labItemId_Main[i]+'"> </div>'
-        if (labIngred_Main[i] == 'chicken') {
-            chickenItemHtml.append(mainItemLab)
+function itemTittleCreate_main(labIngred_main) {} //暫時不做
+function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIngred_main){ // 雞,鴨目前hardCode
+    itemHtml_chicken = $('#chickenItem')
+    itemHtml_duck = $('#duckItem')
+    for (i=0;i<itemNameList_main.length;i++) {
+        mainItemLab = '<div class="col-3"> <label>'+itemNameList_main[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice_main[i]+'" id = "'+itemId_main[i]+'"> </div>'
+        if (labIngred_main[i] == 'chicken') {
+            itemHtml_chicken.append(mainItemLab)
         }
-        if (labIngred_Main[i] == 'duck') {
-            duckItemHtml.append(mainItemLab)
+        if (labIngred_main[i] == 'duck') {
+            itemHtml_duck.append(mainItemLab)
         }
    } // id還沒設
 }
 function discount() {
     let discountInput = 0
     discountInput = $('#discountInput').val() || 0
-    let discountedTotal = insertJson.totalAmount - parseInt(discountInput);
-    totalAmount = discountedTotal
-    $('#totalCount').text(discountedTotal+"(已折價:"+parseInt(discountInput)+")");
+    totalAmount= totalAmount - parseInt(discountInput);
+    $('#totalCount').text(totalAmount+"(已折價:"+parseInt(discountInput)+")");
 }
 function insertDate() {
     const today = new Date();
@@ -128,7 +130,7 @@ function insertDate() {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     $('#date').val(year+month+day);
-    insertJson.orderDate =  `${year}${month}${day}`;
+    insertRequestJson.orderDate =  `${year}${month}${day}`;
 }
 function calculatePrice() {
     const result = checkDate()
@@ -137,14 +139,14 @@ function calculatePrice() {
         return
     }
     sum = 0;
-    for (var i = 1; i <= 14; i++) {
+    for (let i = 1; i <= 14; i++) {
         if (i<10) {
             count = $('#00' + i).val()||0;
-            insertJson.orderItem['00' + i] = parseInt(count)
+            insertRequestJson.orderItem['00' + i] = parseInt(count)
             sum += priceConvert(count,'00' + i);
         } else {
             count = $('#0' + i).val()||0;
-            insertJson.orderItem['0' + i] = parseInt(count)
+            insertRequestJson.orderItem['0' + i] = parseInt(count)
             sum += priceConvert(count,'0' + i);
         }
         totalAmount = sum
@@ -156,33 +158,31 @@ function checkDate() {
     const inputDate = $('#date').val();
     const pattern = /^\d{8}$/;
     if (pattern.test(inputDate)) {
-        insertJson.orderDate = inputDate
+        insertRequestJson.orderDate = inputDate
         return true
     } else {
         alert('日期格式錯誤請輸入"YYYYMMDD"')
         return false
     }
 }
-function priceConvert(count,targetItemId) {
+function priceConvert(count,targetItemId) { //利用queryResponseJson.menuDtl 取得菜單品項對應的金額
     let targetPrice = 0;
-    for (const item of queryJson.menuDtl) {
+    for (const item of queryResponseJson.menuDtl) {
         if (item.itemId === targetItemId) {
             targetPrice = item.price;
             break;
         }
     }
-//    console.log(targetPrice * count);
     return targetPrice * count
 }
 function orderFinish() {
-  insertJson.discount = $('#discountInput').val();
-  insertJson.remark = $('#remark').val();
-  insertJson.totalAmount = totalAmount;
-  const orderJsonString = JSON.stringify(insertJson);
-  console.log(orderJsonString);
-  postData(orderJsonString)
+  insertRequestJson.discount = $('#discountInput').val();
+  insertRequestJson.remark = $('#remark').val();
+  insertRequestJson.totalAmount = totalAmount;
+  const orderJsonString = JSON.stringify(insertRequestJson);
+  postOrderDetailsData(orderJsonString)
 }
-function postData(orderJsonString) {
+function postOrderDetailsData(orderJsonString) {
   $('#loading').attr('hidden', false);
   $('#orderFinish').attr('disabled', true);
   $.ajax({
@@ -192,7 +192,7 @@ function postData(orderJsonString) {
     contentType: 'application/json', // 設定 content type 為 JSON
     success: function(response) {
       $('#loading').attr('hidden', true);
-      console.log('Response:', JSON.stringify(response, null, 2));
+//      console.log('Response:', JSON.stringify(response, null, 2));
       alert('訂單 '+response.orderId+' 新增成功')
       location.reload();
     },
