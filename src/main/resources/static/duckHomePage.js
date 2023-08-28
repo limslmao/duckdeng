@@ -269,8 +269,9 @@ function chart(dataXaxisList, reportCountList, dataKeyList, reportCountPersonLis
                         label: function(context) {
                              let label = context.dataset.label || '';
                              let dataIndex = context.dataIndex;
-                             let value = reportCountPersonList[dataIndex][context.datasetIndex] + '%';
-                             return label + ': ' + value;
+                             let person = reportCountPersonList[dataIndex][context.datasetIndex] + '%';
+                             let count = reportCountList[dataIndex][context.datasetIndex]
+                             return label + ': ' + count + '隻(佔'+person+')' ;
                         }
                     }
                 },

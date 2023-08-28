@@ -30,7 +30,8 @@ let insertJson = {
    },
    "totalAmount": 840,
    "discount":50,
-   "remark":"測試"
+   "remark":"測試",
+   "orderDate":"20230827"
 }
 let labItemId = [];
 let labItemId_Main = [];
@@ -122,13 +123,19 @@ function discount() {
     $('#totalCount').text(discountedTotal+"(已折價:"+parseInt(discountInput)+")");
 }
 function insertDate() {
-    var today = new Date();
-    var year = today.getFullYear();
-    var month = today.getMonth() + 1; // 月份是從 0 開始的，所以要加 1
-    var day = today.getDate();
-    $('#date').val(year + "/" + month + "/" + day);
+    const today = new Date();
+    const  year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    $('#date').val(year+month+day);
+    insertJson.orderDate =  `${year}${month}${day}`;
 }
 function calculatePrice() {
+    const result = checkDate()
+    if (result != true) {
+        $('#orderFinish, .discount, #remark').prop('disabled',true);
+        return
+    }
     sum = 0;
     for (var i = 1; i <= 14; i++) {
         if (i<10) {
@@ -140,10 +147,21 @@ function calculatePrice() {
             insertJson.orderItem['0' + i] = parseInt(count)
             sum += priceConvert(count,'0' + i);
         }
-        insertJson.totalAmount = sum
+        totalAmount = sum
     }
     $('#totalCount').text(sum);
     $('#orderFinish, .discount, #remark').prop('disabled', sum != 0 ? false : true);
+}
+function checkDate() {
+    const inputDate = $('#date').val();
+    const pattern = /^\d{8}$/;
+    if (pattern.test(inputDate)) {
+        insertJson.orderDate = inputDate
+        return true
+    } else {
+        alert('日期格式錯誤請輸入"YYYYMMDD"')
+        return false
+    }
 }
 function priceConvert(count,targetItemId) {
     let targetPrice = 0;

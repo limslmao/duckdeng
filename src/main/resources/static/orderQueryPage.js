@@ -185,33 +185,36 @@ function deleteData(orderId) {
     });
 }
 function getDate(clickedButtonId) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    let day = today.getDate();
-    switch (clickedButtonId) {
-        case 'today':
-            day = String(day).padStart(2, '0');
-            break;
-        case 'yesterday':
-            day = String(day - 1).padStart(2, '0');
-            break;
-        case 'thisWeek':
+   const today = new Date();
+   const year = today.getFullYear();
+   const month = String(today.getMonth() + 1).padStart(2, '0');
+   let day = today.getDate();
+
+   switch (clickedButtonId) {
+       case 'today':
+           day = String(day).padStart(2, '0');
+           break;
+       case 'yesterday':
+           day = String(day - 1).padStart(2, '0');
+           break;
+       case 'thisWeek': // 一到日
             const todayOfWeek = new Date(today);
-            const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
-            todayOfWeek.setDate(day - dayOfWeek + 1); // Adjust for the beginning of the week
+            const dayOfWeek = today.getDay();
+            todayOfWeek.setDate(day - dayOfWeek + 1);
             const formattedStartDate = `${year}${month}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
-            todayOfWeek.setDate(day + (7 - dayOfWeek)); // Adjust for the end of the week
-            const formattedEndDate = `${year}${month}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
+            const endOfWeek = new Date(todayOfWeek);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            const formattedEndDate = `${endOfWeek.getFullYear()}${String(endOfWeek.getMonth() + 1).padStart(2, '0')}${String(endOfWeek.getDate()).padStart(2, '0')}`;
             $('#startDate').val(formattedStartDate);
             $('#endDate').val(formattedEndDate);
-            return; // 不再输出 formattedDate
-        default:
-            break;
-    }
-    const formattedDate = `${year}${month}${day}`;
-    $('#startDate').val(formattedDate);
-    $('#endDate').val(formattedDate);
+        return;
+       default:
+           break;
+   }
+
+   const formattedDate = `${year}${month}${day}`;
+   $('#startDate').val(formattedDate);
+   $('#endDate').val(formattedDate);
 }
 function getFormattedDate() {
   const today = new Date();
