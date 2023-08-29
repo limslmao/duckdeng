@@ -43,6 +43,7 @@ let itemId_add = [];
 let itemId_main = [];
 let orderItemsJson = [];
 let totalAmount = ''; //總額
+let $discountInput = 0
 $(function(){
     $('#orderMenu').on('click', function(event) {
         event.preventDefault(); // Prevent the default link navigation
@@ -119,10 +120,9 @@ function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIng
    } // id還沒設
 }
 function discount() {
-    let discountInput = 0
-    discountInput = $('#discountInput').val() || 0
-    totalAmount= totalAmount - parseInt(discountInput);
-    $('#totalCount').text(totalAmount+"(已折價:"+parseInt(discountInput)+")");
+    $discountInput += parseInt($('#discountInput').val() || 0)
+    totalAmount = totalAmount - $discountInput;
+    $('#totalCount').text(totalAmount+"(已折價:"+$discountInput+")");
 }
 function insertDate() {
     const today = new Date();
@@ -139,7 +139,7 @@ function calculatePrice() {
         return
     }
     sum = 0;
-    for (let i = 1; i <= 14; i++) {
+    for (let i = 1; i <= queryResponseJson.menuDtl.length ; i++) {
         if (i<10) {
             count = $('#00' + i).val()||0;
             insertRequestJson.orderItem['00' + i] = parseInt(count)
