@@ -102,7 +102,7 @@ function itemHtmlCreate_add(itemNameList,itemPrice,itemId_add) {
     itemLab_add = ''
     for (i=0;i<itemNameList.length;i++) {
         itemLab_add += '<div class="col-3"> <label>'+itemNameList[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>'
-    } // id還沒設
+    }
     itemHtml_add.append(itemLab_add)
 }
 function itemTittleCreate_main(labIngred_main) {} //暫時不做
