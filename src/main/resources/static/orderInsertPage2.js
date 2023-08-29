@@ -4,6 +4,7 @@
 /*  --date--   --name--    --event--                                                        --version--   */
 /*  2023/08/28   Arte      codeReview,insertRequestJson add orderDate key,totalAmount fix       V00       */
 /*  2023/08/29   Arte      change for length , variable $discountInput change to global         V01       */
+/*  2023/08/30   Arte      count_add calculate                                                  V02       */
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -139,6 +140,8 @@ function calculatePrice() {
         return
     }
     sum = 0;
+    sum_add = 0;
+    console.log(itemId_add)
     for (let i = 1; i <= queryResponseJson.menuDtl.length ; i++) {  /* V01 */
         if (i<10) {
             count = $('#00' + i).val()||0;
@@ -148,11 +151,16 @@ function calculatePrice() {
             count = $('#0' + i).val()||0;
             insertRequestJson.orderItem['0' + i] = parseInt(count)
             sum += priceConvert(count,'0' + i);
+            if (itemId_add.includes('0' + i) && count != 0) {  //計算加購項目總金額 /* V02 */
+                sum_add += priceConvert(count,'0' + i);;
+            }
         }
         totalAmount = sum
     }
     $('#totalCount').text(sum);
     $('#orderFinish, .discount, #remark').prop('disabled', sum != 0 ? false : true);
+    $('#count_add').text('(目前加購總金額:'+sum_add+')'); /* V02 */
+    $('#count_add').attr('hidden', false);  /* V02 */
 }
 function checkDate() {
     const inputDate = $('#date').val();
