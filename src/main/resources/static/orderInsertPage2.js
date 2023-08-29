@@ -1,9 +1,9 @@
-/*  current API used: POST/api/orderDetails , GET /api/orderItems                             */
-/*  main function: orderDtl Insert , create Html from menuItem                                */
-/*  version record:                                                                           */
-/*  --date--   --name--    --event--                                                          */
-/*  2023/08/28   Arte      codeReview,insertRequestJson add orderDate key,totalAmount fix     */
-/*                                                                                            */
+/*  current API used: POST/api/orderDetails , GET /api/orderItems                                         */
+/*  main function: orderDtl Insert , create Html from menuItem                                            */
+/*  version record:                                                                                       */
+/*  --date--   --name--    --event--                                                        --version--   */
+/*  2023/08/28   Arte      codeReview,insertRequestJson add orderDate key,totalAmount fix       V00       */
+/*  2023/08/29   Arte      change for length , variable $discountInput change to global         V01       */
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -43,7 +43,7 @@ let itemId_add = [];
 let itemId_main = [];
 let orderItemsJson = [];
 let totalAmount = ''; //總額
-let $discountInput = 0
+let $discountInput = 0 /* V01 */
 $(function(){
     $('#orderMenu').on('click', function(event) {
         event.preventDefault(); // Prevent the default link navigation
@@ -120,7 +120,7 @@ function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIng
    } // id還沒設
 }
 function discount() {
-    $discountInput += parseInt($('#discountInput').val() || 0)
+    $discountInput += parseInt($('#discountInput').val() || 0) /* V01 */
     totalAmount = totalAmount - $discountInput;
     $('#totalCount').text(totalAmount+"(已折價:"+$discountInput+")");
 }
@@ -139,7 +139,7 @@ function calculatePrice() {
         return
     }
     sum = 0;
-    for (let i = 1; i <= queryResponseJson.menuDtl.length ; i++) {
+    for (let i = 1; i <= queryResponseJson.menuDtl.length ; i++) {  /* V01 */
         if (i<10) {
             count = $('#00' + i).val()||0;
             insertRequestJson.orderItem['00' + i] = parseInt(count)
