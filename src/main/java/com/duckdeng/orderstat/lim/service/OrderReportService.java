@@ -48,6 +48,13 @@ public class OrderReportService {
                     .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
                             Collectors.mapping(OrderItems::getItemId, Collectors.toList())));
 
+        Map<String, String> itemIdToUnitMap = new HashMap<>();
+        if("itemIngred".equals(itemType)) {
+            for (OrderItems item : orderItems) {
+                itemIdToUnitMap.put(item.getItemId(), item.getItemUnit());
+            }
+        }
+
         // Step 5: 將依照烹飪方式分類的菜單Map，跟依日期分類的訂單map進行整合
         // 5-1. 將菜單對應的屬性做成一張map
         Map<String, String> itemIdToTypeMap = new HashMap<>();
@@ -72,6 +79,12 @@ public class OrderReportService {
                 Integer count = itemCountEntry.getValue();
 
                 String type = itemIdToTypeMap.get(itemId); // Convert item ID to type
+
+                if ("itemIngred".equals(itemType)) {
+                    String itemUnit = itemIdToUnitMap.get(itemId);
+                    count = "half".equals(itemUnit) ? count / 2 : count; // Modify count based on itemUnit
+                }
+
                 if (type != null) {
                     transformedCounts.merge(type, count, Integer::sum); // Merge counts by type
                 }
