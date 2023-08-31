@@ -5,6 +5,7 @@
 /*  2023/08/28   Arte      codeReview,insertRequestJson add orderDate key,totalAmount fix       V00       */
 /*  2023/08/29   Arte      change for length , variable $discountInput change to global         V01       */
 /*  2023/08/30   Arte      count_add calculate                                                  V02       */
+/*  2023/08/31   Arte      discountInput.addEventListener for 'blur' and finish order reset     V03       */
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -54,8 +55,8 @@ $(function(){
     $('#discountBtn').on('click', discount);
     getOrderItemsData()
     insertDate();
-    const discountInput = document.getElementById('discountInput');
-    discountInput.addEventListener('blur', function(event) {
+    const discountInput = document.getElementById('discountInput');/* V03 */
+    discountInput.addEventListener('blur', function(event) { /* V03 */
         discount();
     });
 });
@@ -199,14 +200,15 @@ function postOrderDetailsData(orderJsonString) {
   $('#orderFinish').attr('disabled', true);
   $.ajax({
     type: 'POST',
-    url: '/api/orderDetails', // 移除多餘的空格
-    data: orderJsonString, // 將 JSON 字串傳送至伺服器
-    contentType: 'application/json', // 設定 content type 為 JSON
+    url: '/api/orderDetails',
+    data: orderJsonString,
+    contentType: 'application/json',
     success: function(response) {
       $('#loading').attr('hidden', true);
-//      console.log('Response:', JSON.stringify(response, null, 2));
       alert('訂單 '+response.orderId+' 新增成功')
-      location.reload();
+      $('input[type="number"]').val(''); /* V03 */
+      $('#remark').val(''); /* V03 */
+      calculatePrice(); /* V03 */
     },
     error: function(xhr, status, error) {
       console.log('Error:', error);
