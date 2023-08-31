@@ -54,6 +54,10 @@ $(function(){
     $('#discountBtn').on('click', discount);
     getOrderItemsData()
     insertDate();
+    const discountInput = document.getElementById('discountInput');
+    discountInput.addEventListener('blur', function(event) {
+        discount();
+    });
 });
 function getOrderItemsData() {
     $.ajax({
