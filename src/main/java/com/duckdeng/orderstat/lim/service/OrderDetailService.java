@@ -1,5 +1,6 @@
 package com.duckdeng.orderstat.lim.service;
 
+import com.duckdeng.orderstat.lim.dto.OrderDetailDTO;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.google.api.core.ApiFuture;
 import com.google.api.gax.rpc.NotFoundException;
@@ -7,22 +8,22 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrderDetailService {
-    public OrderDetail createOrderDetail(OrderDetail orderDetail) throws Exception {
-        if (orderDetail == null) {
+    public OrderDetail createOrderDetail(OrderDetailDTO orderDetailDTO) throws Exception {
+        if (orderDetailDTO == null) {
             throw new IllegalArgumentException("Order detail cannot be null.");
         }
 
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
-        Date today = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String datePart = dateFormat.format(today).substring(1);
+        String datePart = orderDetailDTO.getOrderDate().substring(1);
 
         try {
             ApiFuture<QuerySnapshot> future = dbFirestore.collection("orderDetail")
@@ -38,7 +39,12 @@ public class OrderDetailService {
             int newNumberOfDocuments = Integer.parseInt(highestOrderID.substring(7)) + 1;
             String orderItemKey = datePart + String.format("%03d", newNumberOfDocuments);
 
+            OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(orderItemKey);
+            orderDetail.setOrderItem(orderDetailDTO.getOrderItem());
+            orderDetail.setTotalAmount(orderDetailDTO.getTotalAmount());
+            orderDetail.setDiscount(orderDetailDTO.getDiscount());
+            orderDetail.setRemark(orderDetailDTO.getRemark());
             dbFirestore.collection("orderDetail").document(orderItemKey).set(orderDetail);
 
             return orderDetail;

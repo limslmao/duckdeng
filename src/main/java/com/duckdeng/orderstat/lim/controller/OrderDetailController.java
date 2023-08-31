@@ -1,5 +1,6 @@
 package com.duckdeng.orderstat.lim.controller;
 
+import com.duckdeng.orderstat.lim.dto.OrderDetailDTO;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.service.OrderDetailService;
 import org.springframework.http.HttpStatus;
@@ -21,12 +22,12 @@ public class OrderDetailController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetail orderDetail) {
+    public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetailDTO orderDetailDTO) {
         try {
-            if (orderDetail == null) {
+            if (orderDetailDTO == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order detail cannot be null.");
             }
-            OrderDetail newOrderDetail = orderDetailService.createOrderDetail(orderDetail);
+            OrderDetail newOrderDetail = orderDetailService.createOrderDetail(orderDetailDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(newOrderDetail);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
