@@ -209,6 +209,7 @@ function postOrderDetailsData(orderJsonString) {
       $('input[type="number"]').val(''); /* V03 */
       $('#remark').val(''); /* V03 */
       calculatePrice(); /* V03 */
+      window.scrollTo(0, 0)
     },
     error: function(xhr, status, error) {
       console.log('Error:', error);
