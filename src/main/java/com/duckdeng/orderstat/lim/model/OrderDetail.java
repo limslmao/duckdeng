@@ -13,4 +13,5 @@ public class OrderDetail {
     private int totalAmount;
     private int discount;
     private String remark;
+    private String orderPlatformId;
 }

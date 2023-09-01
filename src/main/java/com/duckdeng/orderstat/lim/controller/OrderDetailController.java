@@ -1,8 +1,11 @@
 package com.duckdeng.orderstat.lim.controller;
 
+import com.duckdeng.orderstat.lim.dto.ImportOrderRequestDTO;
 import com.duckdeng.orderstat.lim.dto.OrderDetailDTO;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.service.OrderDetailService;
+import com.duckdeng.orderstat.lim.service.strategy.FoodPandaOrderImporter;
+import com.duckdeng.orderstat.lim.service.strategy.UberEatsOrderImporter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +18,16 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/api/orderDetails")
 public class OrderDetailController {
 
-    public OrderDetailService orderDetailService;
+    private final OrderDetailService orderDetailService;
+    private final FoodPandaOrderImporter foodPandaOrderImporter;
+    private final UberEatsOrderImporter uberEatsOrderImporter;
 
-    public OrderDetailController(OrderDetailService orderDetailService) {
+    public OrderDetailController(OrderDetailService orderDetailService,
+                                 FoodPandaOrderImporter foodPandaOrderImporter,
+                                 UberEatsOrderImporter uberEatsOrderImporter) {
         this.orderDetailService = orderDetailService;
+        this.foodPandaOrderImporter = foodPandaOrderImporter;
+        this.uberEatsOrderImporter = uberEatsOrderImporter;
     }
 
     @PostMapping
@@ -35,6 +44,21 @@ public class OrderDetailController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order detail.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input data.");
+        }
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<?> importOrderDetailsFromJSON(@RequestBody ImportOrderRequestDTO importRequest) {
+        try {
+            if (importRequest.getFoodPandaDtl() != null && !importRequest.getFoodPandaDtl().isEmpty()) {
+                foodPandaOrderImporter.processOrder(importRequest.getFoodPandaDtl());
+            }
+            if (importRequest.getUberEatDtl() != null && !importRequest.getUberEatDtl().isEmpty()) {
+                uberEatsOrderImporter.processOrder(importRequest.getUberEatDtl());
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body("Order details imported successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error importing order details.\n" + e);
         }
     }
 
