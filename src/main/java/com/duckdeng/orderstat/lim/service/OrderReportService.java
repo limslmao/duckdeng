@@ -48,10 +48,10 @@ public class OrderReportService {
                     .collect(Collectors.groupingBy(item -> getValueByField(item, itemType),
                             Collectors.mapping(OrderItems::getItemId, Collectors.toList())));
 
-        Map<String, String> itemIdToUnitMap = new HashMap<>();
+        Map<String, String> itemIdToItemUnitMap = new HashMap<>();
         if("itemIngred".equals(itemType)) {
             for (OrderItems item : orderItems) {
-                itemIdToUnitMap.put(item.getItemId(), item.getItemUnit());
+                itemIdToItemUnitMap.put(item.getItemId(), item.getItemUnit());
             }
         }
 
@@ -78,15 +78,15 @@ public class OrderReportService {
                 String itemId = itemCountEntry.getKey();
                 Integer count = itemCountEntry.getValue();
 
-                String type = itemIdToTypeMap.get(itemId); // Convert item ID to type
+                String type = itemIdToTypeMap.get(itemId);
 
                 if ("itemIngred".equals(itemType)) {
-                    String itemUnit = itemIdToUnitMap.get(itemId);
-                    count = "half".equals(itemUnit) ? count / 2 : count; // Modify count based on itemUnit
+                    String itemUnit = itemIdToItemUnitMap.get(itemId);
+                    count = "half".equals(itemUnit) ? count / 2 : count;
                 }
 
                 if (type != null) {
-                    transformedCounts.merge(type, count, Integer::sum); // Merge counts by type
+                    transformedCounts.merge(type, count, Integer::sum);
                 }
             }
 
