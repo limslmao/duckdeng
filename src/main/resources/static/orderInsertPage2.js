@@ -91,14 +91,12 @@ function orderItemsParser(response) { //add,main目前hardCode
            let itemNameList_main = []
            let itemPrice_main = []
            let labIngred_main = []
-
            for (let i = 0; i < filteredItems_main.length; i++) {
                itemNameList_main.push(filteredItems_main[i].note);
                itemPrice_main.push(filteredItems_main[i].price);
                itemId_main.push(filteredItems_main[i].itemId);
                labIngred_main.push(filteredItems_main[i].itemIngred);//目前hardCode設定html只有雞,鴨
            }
-
            itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIngred_main)
 //           labIngred_main = new Set(labIngred_main);
 //           itemTittleCreate_main(labIngred_main)
@@ -123,7 +121,7 @@ function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIng
         if (labIngred_main[i] == 'duck') {
             itemHtml_duck.append(mainItemLab)
         }
-   } // id還沒設
+   }
 }
 function discount() {
     $discountInput += parseInt($('#discountInput').val() || 0) /* V01 */

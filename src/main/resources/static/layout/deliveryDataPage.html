@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>duckDeng外送平台資料上傳</title>
-    <!-- AdminLTE CSS檔案 -->
-<!--    <link rel="stylesheet" href="/css/adminlte.min.css">-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>duckDeng菜單編輯</title>
+
+    <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
-    <link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
-    <link rel="stylesheet" th:href="@{/dist/css/adminlte.css}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
 </head>
 
 
@@ -61,7 +65,6 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
-
                     <li class="nav-item">
                         <a href="../layout/orderQueryPage.html" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -80,6 +83,12 @@
                             <p>菜單編輯</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="../layout/deliveryDataPage.html" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>外送平台專區</p>
+                        </a>
+                    </li>
 
                 </ul>
             </nav>
@@ -95,7 +104,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>外送平台專區</h1>
+                        <h1>外送平台資料上傳功能</h1>
                     </div>
                     <div class="col-sm-6">
                     </div>
@@ -104,29 +113,56 @@
         </section>
 
         <!-- Main content -->
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">資料上傳</h3>
+
+
+
+
+
+        <div class="card">
+                <input type="file" id="fileInput">
+                <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" id = "loading" hidden="true">
+            <div>
+                <label id = 'platformName'></label>
+            </div>
+                <div id="jsonData"></div>
             </div>
             <!-- /.card-header -->
-            <!-- form start -->
-            <form>
-                <div class="card-body">
-                    <button  class="btn btn-primary" id="uberEatUpload">uberEat資料上傳</button>
-                    <button  class="btn btn-primary" id="foodPandaUpload">foodPanda資料上傳</button>
+            <div class="card-body p-0">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>單號</th>
+                        <th>項目</th>
+                        <th>金額</th>
+                        <th>日期</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" id = "uploadBtn" disabled = "true">上傳</button>
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+        <!-- 在合适的位置添加 Modal 的 HTML 代码 -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id ="itemActionTittle" ></h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body" id = "itemActionContent">
+                    </div>
+                    <!--                            <button class="btn btn-default" id = "calculatePrice">結帳</button>-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-default" id = 'itemActionBtn'>送出</button>
+                    </div>
                 </div>
-                <!-- /.card-body -->
-
-                <div class="card-footer">
-                    <img src="../../dist/img/loading.gif" style="width: 30px; height: 30px;" hidden="true" id = "loading">
-                </div>
-            </form>
+            </div>
         </div>
-        <div  id = "cardAutoCreate">
-        </div>
-        </div>
-
-
 
 
 
@@ -150,13 +186,30 @@
 
 
 
-<!-- 引入 JavaScript 檔案 -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/dist/js/adminlte.min.js}"></script>
-<script th:src="@{/devPlatformUploadPage.js}"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="../../deliveryDataPage.js"></script>
+
+<style>
+.custom-checkbox {
+  transform: scale(1.5);
+  vertical-align: middle;
+}
+</style>
+
+
+<!-- AdminLTE App -->
+
+<!-- AdminLTE for demo purposes -->
+
+
+
 </body>
 </html>
