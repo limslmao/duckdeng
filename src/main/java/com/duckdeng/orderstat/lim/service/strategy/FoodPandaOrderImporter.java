@@ -3,6 +3,7 @@ package com.duckdeng.orderstat.lim.service.strategy;
 import com.duckdeng.orderstat.lim.model.OrderDetail;
 import com.duckdeng.orderstat.lim.model.OrderPlatformDetail;
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.FieldPath;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -33,9 +34,10 @@ public class FoodPandaOrderImporter implements OrderImporter {
             for (String date : groupedOrders.keySet()) {
                 String datePart = date.substring(1);
 
-                // Step 1. 獲取已存在的orderPlatformIds
+                // Step 1. 獲取DB目前已經有的orderPlatformIds
                 ApiFuture<QuerySnapshot> future1 = transaction.get(dbFirestore.collection("orderDetail")
-                        .whereEqualTo("orderDate", date));
+                        .whereGreaterThanOrEqualTo(FieldPath.documentId(), datePart + "001")
+                        .whereLessThanOrEqualTo(FieldPath.documentId(), datePart + "999"));
                 List<QueryDocumentSnapshot> documentsForIdCheck = future1.get().getDocuments();
                 List<String> existingOrderPlatformIds = documentsForIdCheck.stream()
                         .map(doc -> doc.getString("orderPlatformId"))
