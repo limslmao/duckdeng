@@ -226,7 +226,7 @@ function deleteOrderDtlData(orderId) {
 function datePickBtn(clickedButtonId) {
    const today = new Date();
    const year = today.getFullYear();
-   const month = String(today.getMonth() + 1).padStart(2, '0');
+   let month = String(today.getMonth() + 1).padStart(2, '0');
    let day = today.getDate();
    switch (clickedButtonId) {
        case 'today':
@@ -234,22 +234,26 @@ function datePickBtn(clickedButtonId) {
            break;
        case 'yesterday':
            day = String(day - 1).padStart(2, '0');
+           if (day == 0) { //    1/1應該還是有問題
+            const lastDayOfLastMonth = new Date(year, month - 1, 0);
+            month = String( month - 1 ).padStart(2, '0') ;
+            day = String(lastDayOfLastMonth.getDate()).padStart(2, '0');
+           }
            break;
        case 'thisWeek': // 一到日
             const todayOfWeek = new Date(today);
             const dayOfWeek = today.getDay();
             todayOfWeek.setDate(day - dayOfWeek + 1);
-            const formattedStartDate = `${year}${month}${String(todayOfWeek.datePickBtn()).padStart(2, '0')}`;
+            const formattedStartDate = `${year}${month}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
             const endOfWeek = new Date(todayOfWeek);
-            endOfWeek.setDate(endOfWeek.datePickBtn() + 6);
-            const formattedEndDate = `${endOfWeek.getFullYear()}${String(endOfWeek.getMonth() + 1).padStart(2, '0')}${String(endOfWeek.datePickBtn()).padStart(2, '0')}`;
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            const formattedEndDate = `${endOfWeek.getFullYear()}${String(endOfWeek.getMonth() + 1).padStart(2, '0')}${String(endOfWeek.getDate()).padStart(2, '0')}`;
             $('#startDate').val(formattedStartDate);
             $('#endDate').val(formattedEndDate);
         return;
        default:
            break;
    }
-
    const formattedDate = `${year}${month}${day}`;
    $('#startDate').val(formattedDate);
    $('#endDate').val(formattedDate);

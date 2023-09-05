@@ -59,6 +59,15 @@ $(function(){
     discountInput.addEventListener('blur', function(event) { /* V03 */
         discount();
     });
+  $('form').on('click', '.pick', function() {
+      const buttonId = $(this).prop('id');
+      console.log(buttonId);
+      const relatedInput = $('input[id="' + buttonId + '"]');
+      const currentValue = parseInt(relatedInput.val()) || 0;
+      const newValue = currentValue + 1;
+      relatedInput.val(newValue);
+  });
+
 });
 function getOrderItemsData() {
     $.ajax({
@@ -105,7 +114,7 @@ function itemHtmlCreate_add(itemNameList,itemPrice,itemId_add) {
     itemHtml_add = $("#addItem")
     itemLab_add = ''
     for (i=0;i<itemNameList.length;i++) {
-        itemLab_add += '<div class="col-3"> <label>'+itemNameList[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>'
+        itemLab_add += '<div class="col-3"> <button type="button" id="'+itemId_add[i]+'" class="btn btn-primary pick" >'+itemNameList[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>'
     }
     itemHtml_add.append(itemLab_add)
 }
@@ -114,7 +123,7 @@ function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIng
     itemHtml_chicken = $('#chickenItem')
     itemHtml_duck = $('#duckItem')
     for (i=0;i<itemNameList_main.length;i++) {
-        mainItemLab = '<div class="col-3"> <label>'+itemNameList_main[i]+':</label><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice_main[i]+'" id = "'+itemId_main[i]+'"> </div>'
+        mainItemLab = '<div class="col-3"> <button type="button" id="'+itemId_main[i]+'"  class="btn btn-primary pick" >'+itemNameList_main[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice_main[i]+'" id = "'+itemId_main[i]+'"> </div>'
         if (labIngred_main[i] == 'chicken') {
             itemHtml_chicken.append(mainItemLab)
         }
@@ -144,14 +153,13 @@ function calculatePrice() {
     }
     sum = 0;
     sum_add = 0;
-    console.log(itemId_add)
     for (let i = 1; i <= queryResponseJson.menuDtl.length ; i++) {  /* V01 */
         if (i<10) {
-            count = $('#00' + i).val()||0;
+            count = $('input[id="00'+i+'"]').val()||0;
             insertRequestJson.orderItem['00' + i] = parseInt(count)
             sum += priceConvert(count,'00' + i);
         } else {
-            count = $('#0' + i).val()||0;
+            count = $('input[id="0'+i+'"]').val()||0;
             insertRequestJson.orderItem['0' + i] = parseInt(count)
             sum += priceConvert(count,'0' + i);
             if (itemId_add.includes('0' + i) && count != 0) {  //計算加購項目總金額 /* V02 */

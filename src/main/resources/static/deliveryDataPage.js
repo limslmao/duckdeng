@@ -56,37 +56,40 @@ function foodPandaDataParse(jsonData) {
 function uberEatDataParse(jsonData) {
                  postRequestJson = groupAndAggregateData(jsonData)
                  tableHtmlCreate()
+                     postData()
 
 }
-function groupAndAggregateData(data){
+function groupAndAggregateData(data) {
     const groupedData = {};
+
     for (const order of data) {
-        const orderId = order['訂單 ID'];
+        const orderPlatformId = order['訂單 ID'];
         const workflowId = order['工作流程 ID'];
         const productName = order['商品名稱'];
-        const orderAmountStr = order['總金額 '].trim();
+        const orderAmountStr = order['總金額 '].trim(); // 去掉 ' ' 后面的空格
         const orderAmount = orderAmountStr === '' ? 0 : parseInt(orderAmountStr);
         const orderDate = order['訂單日期'].replace(/\//g, ''); // 使用正则表达式替换所有斜杠
         if (!groupedData[workflowId]) {
             groupedData[workflowId] = {
-                orderDtlStr : [],          // 初始化商品名稱数组
+                orderDtlStr: [],         // 初始化商品名稱数组
                 totalAmount: 0,  // 初始化總金額
-                orderPlatformId: orderId,           // 初始化訂單 ID
+                orderPlatformId: orderPlatformId,         // 初始化訂單 ID
                 orderDate: orderDate   // 使用格式化的訂單日期
             };
         }
         // 将商品名稱添加到数组中
         if (productName) {
-            groupedData[workflowId].orderDtl.push(productName);
+            groupedData[workflowId].orderDtlStr.push(productName);
         }
         // 累加總金額
-        groupedData[workflowId].orderAmountTotal += orderAmount;
+        groupedData[workflowId].totalAmount += orderAmount;
+        // 保存订单 ID
     }
     const formattedData = {
-        uberEatDtl: Object.entries(groupedData).map(([workflowId, group]) => ({
-            orderId: group.orderDtl.length > 0 ? group.orderId : '',
-            orderDtl: group.orderDtl.join(', '),
-            orderAmount: group.orderAmountTotal,
+        uberEatDtl: Object.values(groupedData).map(group => ({
+            orderPlatformId:  group.orderDtlStr.length > 0 ? group.orderPlatformId : '',
+            orderDtlStr: group.orderDtlStr.join(', '),
+            totalAmount: group.orderAmountTotal,
             orderDate: group.orderDate
         }))
     };
@@ -96,9 +99,9 @@ function tableHtmlCreate() {
 $('#tableBody').empty()
      for (const item of postRequestJson[''+platform+'Dtl']) {
             let newRow = $('<tr>');
-            newRow.append('<td id = "orderIdForTd">' + item.orderId + '</td>');
-            newRow.append('<td id = "orderDtlForTd">' + item.orderDtl + '</td>');
-            newRow.append('<td id = "orderAmountForTd">' + item.orderAmount + '</td>');
+            newRow.append('<td id = "orderIdForTd">' + item.orderPlatformId + '</td>');
+            newRow.append('<td id = "orderDtlForTd">' + item.orderDtlStr + '</td>');
+            newRow.append('<td id = "orderAmountForTd">' + item.totalAmount + '</td>');
             newRow.append('<td id = "orderDateForTd">' + item.orderDate + '</td>');
             $('#tableBody').append(newRow);
      }
