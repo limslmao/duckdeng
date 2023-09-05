@@ -225,18 +225,21 @@ function deleteOrderDtlData(orderId) {
 }
 function datePickBtn(clickedButtonId) {
    const today = new Date();
-   const year = today.getFullYear();
-   let month = String(today.getMonth() + 1).padStart(2, '0');
+   let year = today.getFullYear();
+   let month = today.getMonth() + 1
    let day = today.getDate();
    switch (clickedButtonId) {
        case 'today':
            day = String(day).padStart(2, '0');
            break;
        case 'yesterday':
+           if (month+day == 2 ){ //   1/1自動跳去年
+            year = year - 1
+           }
            day = String(day - 1).padStart(2, '0');
-           if (day == 0) { //    1/1應該還是有問題
+           if (day == 0) {
             const lastDayOfLastMonth = new Date(year, month - 1, 0);
-            month = String( month - 1 ).padStart(2, '0') ;
+            month =  String(lastDayOfLastMonth.getMonth() + 1 ).padStart(2, '0');
             day = String(lastDayOfLastMonth.getDate()).padStart(2, '0');
            }
            break;
@@ -244,17 +247,17 @@ function datePickBtn(clickedButtonId) {
             const todayOfWeek = new Date(today);
             const dayOfWeek = today.getDay();
             todayOfWeek.setDate(day - dayOfWeek + 1);
-            const formattedStartDate = `${year}${month}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
+            const formattedStartDate = `${year}${String(month).padStart(2, '0')}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
             const endOfWeek = new Date(todayOfWeek);
             endOfWeek.setDate(endOfWeek.getDate() + 6);
             const formattedEndDate = `${endOfWeek.getFullYear()}${String(endOfWeek.getMonth() + 1).padStart(2, '0')}${String(endOfWeek.getDate()).padStart(2, '0')}`;
             $('#startDate').val(formattedStartDate);
             $('#endDate').val(formattedEndDate);
-        return;
+            return;
        default:
            break;
    }
-   const formattedDate = `${year}${month}${day}`;
+   const formattedDate = `${year}${String(month).padStart(2, '0')}${day}`;
    $('#startDate').val(formattedDate);
    $('#endDate').val(formattedDate);
 }
