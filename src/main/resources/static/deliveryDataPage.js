@@ -54,10 +54,8 @@ function foodPandaDataParse(jsonData) {
              tableHtmlCreate()
 }
 function uberEatDataParse(jsonData) {
-                 postRequestJson = groupAndAggregateData(jsonData)
-                 tableHtmlCreate()
-                     postData()
-
+                 postRequestJson = groupAndAggregateData(jsonData);
+                 tableHtmlCreate();
 }
 function groupAndAggregateData(data) {
     const groupedData = {};
@@ -105,7 +103,6 @@ $('#tableBody').empty()
             newRow.append('<td id = "orderDateForTd">' + item.orderDate + '</td>');
             $('#tableBody').append(newRow);
      }
-
 }
 function postData() {
     const orderJsonString = JSON.stringify(postRequestJson);
