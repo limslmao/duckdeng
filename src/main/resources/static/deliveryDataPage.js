@@ -46,7 +46,7 @@ function foodPandaDataParse(jsonData) {
                  foodPandaDtl: jsonData.map(row => ({
                      orderPlatformId: row['訂單編號'],
                      orderDtlStr: row['訂單品項'],
-                     totalAmount: parseInt(row['餐點總額']),
+                     totalAmount: parseInt(row['餐點總額']*0.72),
                      orderDate: parseDateTimeToFormat(row['商家接單時間'])
                  }))
              };
@@ -59,7 +59,6 @@ function uberEatDataParse(jsonData) {
 }
 function groupAndAggregateData(data) {
     const groupedData = {};
-
     for (const order of data) {
         const orderPlatformId = order['訂單 ID'];
         const workflowId = order['工作流程 ID'];
@@ -87,7 +86,7 @@ function groupAndAggregateData(data) {
         uberEatDtl: Object.values(groupedData).map(group => ({
             orderPlatformId:  group.orderDtlStr.length > 0 ? group.orderPlatformId : '',
             orderDtlStr: group.orderDtlStr.join(', '),
-            totalAmount: group.orderAmountTotal,
+            totalAmount: group.totalAmount,
             orderDate: group.orderDate
         }))
     };
