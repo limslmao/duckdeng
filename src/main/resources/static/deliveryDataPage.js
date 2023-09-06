@@ -46,7 +46,7 @@ function foodPandaDataParse(jsonData) {
                  foodPandaDtl: jsonData.map(row => ({
                      orderPlatformId: row['訂單編號'],
                      orderDtlStr: row['訂單品項'],
-                     totalAmount: parseInt(row['餐點總額']*0.72),
+                     totalAmount: parseInt(row['餐點總額']*0.72),//扣掉外送抽成
                      orderDate: parseDateTimeToFormat(row['商家接單時間'])
                  }))
              };

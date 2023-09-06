@@ -30,6 +30,8 @@ const $updateRowDefault = {
      itemSpicy:"Y",
      itemCookMethod:"two",
      note:"蔥爆牛肉",
+     noteFoodPanda:"全鴨2吃",
+     noteUberEat:"全鴨Two吃",
      itemCost:50
 };
 let queryResponseJson = {
@@ -43,17 +45,8 @@ let queryResponseJson = {
                      "itemSpicy":"N",
                      "itemCookMethod":"two",
                      "note": "全鴨二吃",
-                     "itemCost": 50
-                   },
-                    {
-                     "itemId":"002",
-                     "price":650,
-                     "itemType":"main",
-                     "itemIngred":"duck",
-                     "itemUnit":"full",
-                     "itemSpicy":"Y",
-                     "itemCookMethod":"two",
-                     "note": "全鴨二吃",
+                     "noteFoodPanda":"全鴨2吃",
+                     "noteUberEat":"全鴨Two吃",
                      "itemCost": 50
                    }
                  ]
@@ -65,6 +58,8 @@ let createItemName = ""
 $(function(){
     getMenuData()
     $('#addItem').on('click', function() {
+        $('.updateData, .deleteData').prop('disabled', true);
+        event.preventDefault();
         buttonClick = 'create';
         menuItemInputHtmlCreate();
     });
@@ -87,6 +82,8 @@ $(function(){
         buttonClick = 'update';
         $updateRowDefault.itemId = $(this).closest('tr').find('#itemIdForTd').text();
         $updateRowDefault.note = $(this).closest('tr').find('#itemNameForTd').text();
+        $updateRowDefault.noteFoodPanda = $(this).closest('tr').find('#itemNameForTd_f').text();
+        $updateRowDefault.noteUberEat = $(this).closest('tr').find('#itemNameForTd_u').text();
         $updateRowDefault.price = $(this).closest('tr').find('#itemPriceForTd').text();
         $updateRowDefault.itemType = $(this).closest('tr').find('#itemTypeForTd').text();
         $updateRowDefault.itemUnit= $(this).closest('tr').find('#itemUnitForTd').text();
@@ -127,7 +124,7 @@ function modalHtmlCreate() {
     $('#itemActionTittle').text('提示訊息');
     $('#myModal').modal('show');
 }
-function updateMenu(itemId) {
+function updateMenu() {
     $('.updateData, .deleteData').prop('disabled', true);
     buttonClick = "update" ;
     menuItemInputHtmlCreate();
@@ -136,7 +133,7 @@ function menuItemHtmlCreate() {
     for (const item of queryResponseJson.menuDtl) {
         let newRow = $('<tr>');
         newRow.append('<td id = "itemIdForTd">' + item.itemId + '</td>');
-        newRow.append('<td id = "itemNameForTd">' + item.note + '</td>');
+        newRow.append('<td><span id = "itemNameForTd">' + item.note + '</span><span id = "itemNameForTd_f" hidden = "true">' + item.noteFoodPanda + '</span><span id = "itemNameForTd_u" hidden = "true">' + item.noteUberEat + '</span></td>');
         newRow.append('<td id = "itemPriceForTd">' + item.price + '</td>');
         newRow.append('<td id = "itemTypeForTd">' + orderConvert[item.itemType] + '</td>');
         newRow.append('<td id = "itemIngredForTd">' + orderConvert[item.itemIngred] + '</td>');
@@ -152,7 +149,7 @@ function menuItemInputHtmlCreate() {
     $('#addItem').prop('disabled', true);
     let newRow = $('<tr id="createItem">');
     newRow.append('<td id = "tdItemId" >新增後產生</td>');
-    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName"></td>');
+    newRow.append('<td><input type="text" class="form-control" placeholder="請輸入品項名稱" id="itemName"></br><input type="text" class="form-control" placeholder="foodPanda品項名稱" id="itemName_foodPanda"> </br> <input type="text" class="form-control" placeholder="uberEar品項名稱" id="itemName_uberEat"></td> ');
     newRow.append('<td><input type="number" class="form-control" placeholder="請輸入品項金額" id="itemPrice"></td>');
     let itemTypeSelect = $('<select class="form-select" id="itemType"><option value="main">主菜</option><option value="add">加購</option></select>');
     let itemIngredSelect = $('<select class="form-select" id="itemIngred"><option value="duck">鴨</option><option value="chicken">雞</option></select>');
@@ -180,6 +177,7 @@ function menuItemInputHtmlCreate() {
     newRow.append($('<td>').html(itemSpCheckInput));
     newRow.append('<td><input class="form-control" type="number" id="itemCost" placeholder="請輸入成本金額"></td>');
     newRow.append('<td><button class="btn btn-primary cancel-button">取消</button> <button class="btn btn-primary confirm-button">確定</button></td>');
+    newRow.append('</tr>')
     $('#tableBody').append(newRow);
     if (buttonClick == 'update') {
         $('#tdItemId').text($updateRowDefault.itemId );
@@ -191,6 +189,8 @@ function menuItemInputHtmlCreate() {
         $('#itemCookMethod').val(findKeyByValue(orderConvert, $updateRowDefault.itemCookMethod ) );
         $('#itemSpCheck').prop('checked', findKeyByValue(orderConvert,$updateRowDefault.itemSpicy) === 'Y' ? true : false);
         $('#itemCost').val($updateRowDefault.itemCost);
+        $('#itemName_foodPanda').val($updateRowDefault.noteFoodPanda);
+        $('#itemName_uberEat').val($updateRowDefault.noteUberEat);
     }
 }
 function findKeyByValue(obj, value) {
@@ -218,6 +218,8 @@ function confirmItemAdd() {
         insertAndUpdateRequestJson.itemSpicy = null
     }
     insertAndUpdateRequestJson.note = $('#itemName').val();
+    insertAndUpdateRequestJson.noteFoodPanda = $('#itemName_foodPanda').val();
+    insertAndUpdateRequestJson.noteUberEat = $('#itemName_uberEat').val();
     if (buttonClick == "update") {
         insertAndUpdateRequestJson.itemId = $updateRowDefault.itemId
         const orderJsonString = JSON.stringify(insertAndUpdateRequestJson);
@@ -263,6 +265,7 @@ function postMenuData(orderJsonString) {
     });
 }
 function putMenuData(orderJsonString) {
+console.log(orderJsonString)
      $.ajax({
            type: 'PUT',
            url: '/api/orderItems/'+$updateRowDefault.itemId+'',
