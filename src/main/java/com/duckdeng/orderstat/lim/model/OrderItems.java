@@ -14,5 +14,7 @@ public class OrderItems {
     private String itemSpicy;
     private String itemCookMethod;
     private String note;
+    private String noteFoodPanda;
+    private String noteUberEats;
     private int itemCost;
 }
