@@ -17,8 +17,8 @@ $(function(){
       decidePlatform();
     });
     $('#uploadBtn').on('click', function(event) {
-      postData();
-    });;
+      postImportData();
+    });
 });
 function parseDateTimeToFormat(dateTimeStr) {
     const date = new Date(dateTimeStr);
@@ -112,8 +112,22 @@ $('#tableBody').empty()
             $('#tableBody').append(newRow);
      }
 }
-function postData() {
+function postImportData() {
     const orderJsonString = JSON.stringify(postRequestJson);
-    console.log(orderJsonString)
+    $('#loading').attr('hidden', false);
+    $.ajax({
+      type: 'POST',
+      url: '/api/orderDetails/import', // 移除多餘的空格
+      data: orderJsonString, // 將 JSON 字串傳送至伺服器
+      contentType: 'application/json', // 設定 content type 為 JSON
+      success: function(response) {
+        $('#loading').attr('hidden', true);
+        alert('上傳成功')
+        location.reload();
+      },
+      error: function(xhr, status, error) {
+        console.log('Error:', error);
+      }
+    });
 }
 
