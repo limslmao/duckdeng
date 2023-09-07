@@ -96,7 +96,6 @@ public class FoodPandaOrderImporter implements OrderImporter {
     }
 
     private Map<String, Integer> parseWithRegex(String orderDtlStr) throws ExecutionException, InterruptedException {
-        String menuString = "1 半鴨二吃 [1 荷葉餅【一份10片】, 1 甜麵醬【一份】], 1 手扒雞【半隻】 [1 荷葉餅【一份10片】]";
         // Step 1. 取得菜單內的FoodPandaNote
         Map<String, List<OrderItems>> orderItemsMap =orderItemsService.getAllOrderItems();
         List<OrderItems> orderItems = orderItemsMap.get("menuDtl");
@@ -106,7 +105,7 @@ public class FoodPandaOrderImporter implements OrderImporter {
 
         // Step 2. 正規表達式處理字串，做成一張字串與數量的map
         Pattern pattern = Pattern.compile("(\\d+) ([^\\[\\],]+)");
-        Matcher matcher = pattern.matcher(menuString);
+        Matcher matcher = pattern.matcher(orderDtlStr);
         // 用於追蹤每一種品項的總數
         HashMap<String, Integer> orderItemCountPanda = new HashMap<>();
         while (matcher.find()) {
