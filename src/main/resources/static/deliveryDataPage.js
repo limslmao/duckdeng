@@ -1,5 +1,17 @@
+/*  current API used:           */
+/*  main function: upload and parser foodPanda or uberEat excel and post               */
+/*  version record:                                                                    */
+/*  --date--   --name--    --event--                                   --version--     */
+/*  2023/09/07   Arte      codeReview                                     V00          */
+
 let platform ='foodPanda';
-postRequestJson = {};
+postRequestJson = {
+    "uberEatDtl":[{
+        "orderPlatformId":"#B45B5",
+        "orderDtlStr":"半鴨二吃（片鴨＋香鍋麻辣炒骨）",
+        "totalAmount":331,
+        "orderDate":"2023821"}]
+};
 $(function(){
     document.getElementById('fileInput').addEventListener('change', function(event) {
       decidePlatform();
@@ -63,24 +75,21 @@ function groupAndAggregateData(data) {
         const orderPlatformId = order['訂單 ID'];
         const workflowId = order['工作流程 ID'];
         const productName = order['商品名稱'];
-        const orderAmountStr = order['總金額 '].trim(); // 去掉 ' ' 后面的空格
+        const orderAmountStr = order['總金額 '].trim();
         const orderAmount = orderAmountStr === '' ? 0 : parseInt(orderAmountStr);
-        const orderDate = order['訂單日期'].replace(/\//g, ''); // 使用正则表达式替换所有斜杠
+        const orderDate = order['訂單日期'].replace(/\//g, '');
         if (!groupedData[workflowId]) {
             groupedData[workflowId] = {
-                orderDtlStr: [],         // 初始化商品名稱数组
-                totalAmount: 0,  // 初始化總金額
-                orderPlatformId: orderPlatformId,         // 初始化訂單 ID
-                orderDate: orderDate   // 使用格式化的訂單日期
+                orderDtlStr: [],
+                totalAmount: 0,
+                orderPlatformId: orderPlatformId,
+                orderDate: orderDate
             };
         }
-        // 将商品名稱添加到数组中
         if (productName) {
             groupedData[workflowId].orderDtlStr.push(productName);
         }
-        // 累加總金額
         groupedData[workflowId].totalAmount += orderAmount;
-        // 保存订单 ID
     }
     const formattedData = {
         uberEatDtl: Object.values(groupedData).map(group => ({
@@ -106,6 +115,5 @@ $('#tableBody').empty()
 function postData() {
     const orderJsonString = JSON.stringify(postRequestJson);
     console.log(orderJsonString)
-
 }
 

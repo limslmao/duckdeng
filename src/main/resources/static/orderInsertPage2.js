@@ -6,6 +6,7 @@
 /*  2023/08/29   Arte      change for length , variable $discountInput change to global         V01       */
 /*  2023/08/30   Arte      count_add calculate                                                  V02       */
 /*  2023/08/31   Arte      discountInput.addEventListener for 'blur' and finish order reset     V03       */
+/*  2023/09/02   Arte      button click add item count                                          V04       */
 const orderConvert = {
   'duck': '鴨',
   'chicken': '雞',
@@ -59,9 +60,8 @@ $(function(){
     discountInput.addEventListener('blur', function(event) { /* V03 */
         discount();
     });
-  $('form').on('click', '.pick', function() {
+  $('form').on('click', '.pick', function() { /* V04 */
       const buttonId = $(this).prop('id');
-      console.log(buttonId);
       const relatedInput = $('input[id="' + buttonId + '"]');
       const currentValue = parseInt(relatedInput.val()) || 0;
       const newValue = currentValue + 1;
@@ -114,7 +114,7 @@ function itemHtmlCreate_add(itemNameList,itemPrice,itemId_add) {
     itemHtml_add = $("#addItem")
     itemLab_add = ''
     for (i=0;i<itemNameList.length;i++) {
-        itemLab_add += '<div class="col-3"> <button type="button" id="'+itemId_add[i]+'" class="btn btn-primary pick" >'+itemNameList[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>'
+        itemLab_add += '<div class="col-3"> <button type="button" id="'+itemId_add[i]+'" class="btn btn-primary pick" >'+itemNameList[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice[i]+'" id = "'+itemId_add[i]+'"> </div>' /* V04 */
     }
     itemHtml_add.append(itemLab_add)
 }
@@ -123,7 +123,7 @@ function itemHtmlCreate_main(itemNameList_main,itemPrice_main,itemId_main,labIng
     itemHtml_chicken = $('#chickenItem')
     itemHtml_duck = $('#duckItem')
     for (i=0;i<itemNameList_main.length;i++) {
-        mainItemLab = '<div class="col-3"> <button type="button" id="'+itemId_main[i]+'"  class="btn btn-primary pick" >'+itemNameList_main[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice_main[i]+'" id = "'+itemId_main[i]+'"> </div>'
+        mainItemLab = '<div class="col-3"> <button type="button" id="'+itemId_main[i]+'"  class="btn btn-primary pick" >'+itemNameList_main[i]+':</button><input type="number" class="form-control" placeholder="請輸入加購份數 1份/'+itemPrice_main[i]+'" id = "'+itemId_main[i]+'"> </div>' /* V04 */
         if (labIngred_main[i] == 'chicken') {
             itemHtml_chicken.append(mainItemLab)
         }

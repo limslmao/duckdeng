@@ -1,9 +1,10 @@
 /*  current API used: GET,PUT,DELETE /api/orderDetails ; GET /api/orderItems           */
 /*  main function: query update delete  orderDetails                                   */
 /*  version record:                                                                    */
-/*  --date--   --name--    --event--                                   --event--       */
+/*  --date--   --name--    --event--                                   --version--     */
 /*  2023/08/29   Arte      codeReview                                     V00          */
 /*  2023/08/29   Arte      updateList dynamic create, dynamic convert     V01          */
+/*  2023/09/05   Arte      date pick fix                                  V02          */
 
 let queryResponseJson = {
   "orderDtl": [
@@ -226,18 +227,18 @@ function deleteOrderDtlData(orderId) {
 function datePickBtn(clickedButtonId) {
    const today = new Date();
    let year = today.getFullYear();
-   let month = today.getMonth() + 1
+   let month = today.getMonth() + 1 /* V02 */
    let day = today.getDate();
    switch (clickedButtonId) {
        case 'today':
            day = String(day).padStart(2, '0');
            break;
        case 'yesterday':
-           if (month+day == 2 ){ //   1/1自動跳去年
+           if (month+day == 2 ){ //   1/1自動跳去年 /* V02 */
             year = year - 1
            }
-           day = String(day - 1).padStart(2, '0');
-           if (day == 0) {
+           day = String(day - 1).padStart(2, '0'); /* V02 */
+           if (day == 0) { /* V02 */
             const lastDayOfLastMonth = new Date(year, month - 1, 0);
             month =  String(lastDayOfLastMonth.getMonth() + 1 ).padStart(2, '0');
             day = String(lastDayOfLastMonth.getDate()).padStart(2, '0');
@@ -247,7 +248,7 @@ function datePickBtn(clickedButtonId) {
             const todayOfWeek = new Date(today);
             const dayOfWeek = today.getDay();
             todayOfWeek.setDate(day - dayOfWeek + 1);
-            const formattedStartDate = `${year}${String(month).padStart(2, '0')}${String(todayOfWeek.getDate()).padStart(2, '0')}`;
+            const formattedStartDate = `${year}${String(month).padStart(2, '0')}${String(todayOfWeek.getDate()).padStart(2, '0')}`; /* V02 */
             const endOfWeek = new Date(todayOfWeek);
             endOfWeek.setDate(endOfWeek.getDate() + 6);
             const formattedEndDate = `${endOfWeek.getFullYear()}${String(endOfWeek.getMonth() + 1).padStart(2, '0')}${String(endOfWeek.getDate()).padStart(2, '0')}`;
@@ -257,7 +258,7 @@ function datePickBtn(clickedButtonId) {
        default:
            break;
    }
-   const formattedDate = `${year}${String(month).padStart(2, '0')}${day}`;
+   const formattedDate = `${year}${String(month).padStart(2, '0')}${day}`; /* V02 */
    $('#startDate').val(formattedDate);
    $('#endDate').val(formattedDate);
 }
