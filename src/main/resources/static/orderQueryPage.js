@@ -266,10 +266,11 @@ function getFormattedDate() {
   const today = new Date();
   const year = today.getFullYear();
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  const day = today.datePickBtn().toString().padStart(2, '0');
+  const day = (today.getDate()).toString().padStart(2, '0');
   return `${year}${month}${day}`;
 }
 function getOrderDtkData() {
+console.log("inin")
 let startDate = $('#startDate').val()||"20230810"
 let endDate = $('#endDate').val()|| getFormattedDate()
 $.ajax({
