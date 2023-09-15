@@ -3,6 +3,7 @@
 /*  version record:                                                                    */
 /*  --date--   --name--    --event--                                   --version--     */
 /*  2023/09/07   Arte      codeReview                                     V00          */
+/*  2023/09/16   Arte      csv file filter, date fix                      V01          */
 
 let platform ='foodPanda';
 postRequestJson = {
@@ -29,6 +30,12 @@ function parseDateTimeToFormat(dateTimeStr) {
 }
 function decidePlatform() {
     const file = event.target.files[0];
+    if (!file.name.endsWith('.csv')) { /* V01 */
+        alert("請確定是否為.csv檔")
+        $('#tableBody').empty()
+        $('#platformName').text('不支援的檔案格式')
+        return
+    }
         Papa.parse(file, {
              header: true,
              skipEmptyLines: true,
@@ -36,7 +43,7 @@ function decidePlatform() {
                  const jsonData = results.data;
                  const keys = Object.keys(jsonData[0]);
                  if (keys.length > 0) {
-                   const firstKey = keys[0];
+                   const firstKey = keys[0].trim();
                    if (firstKey == '商家名稱'){
                     platform = 'foodPanda';
                     console.log(platform)
@@ -77,7 +84,7 @@ function groupAndAggregateData(data) {
         const productName = order['商品名稱'];
         const orderAmountStr = order['總金額 '].trim();
         const orderAmount = orderAmountStr === '' ? 0 : parseInt(orderAmountStr);
-        const orderDate = order['訂單日期'].replace(/\//g, '');
+        const orderDate = parseDateTimeToFormat(order['訂單日期']); /* V01 */
         if (!groupedData[workflowId]) {
             groupedData[workflowId] = {
                 orderDtlStr: [],
@@ -117,9 +124,9 @@ function postImportData() {
     $('#loading').attr('hidden', false);
     $.ajax({
       type: 'POST',
-      url: '/api/orderDetails/import', // 移除多餘的空格
-      data: orderJsonString, // 將 JSON 字串傳送至伺服器
-      contentType: 'application/json', // 設定 content type 為 JSON
+      url: '/api/orderDetails/import',
+      data: orderJsonString,
+      contentType: 'application/json',
       success: function(response) {
         $('#loading').attr('hidden', true);
         alert('上傳成功')
