@@ -13,6 +13,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class UberEatsOrderImporter implements OrderImporter {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setOrderId(orderItemKey);
                     orderDetail.setTotalAmount(orderDetailDTO.getTotalAmount());
-                    orderDetail.setRemark("import from foodpanda");
+                    orderDetail.setRemark("import from ubereats");
                     orderDetail.setOrderPlatformId(orderDetailDTO.getOrderPlatformId());
 
                     //處理字串成為訂單樣式
@@ -95,22 +96,21 @@ public class UberEatsOrderImporter implements OrderImporter {
     }
 
     private Map<String, Integer> parseWithRegex(String orderDtlStr) throws ExecutionException, InterruptedException {
-        // Step 1. 取得菜單內的FoodPandaNote
+        // Step 1. 取得菜單內的UberEatsNote
         Map<String, List<OrderItems>> orderItemsMap =orderItemsService.getAllOrderItems();
         List<OrderItems> orderItems = orderItemsMap.get("menuDtl");
         Map<String, String> idWithNoteMap = orderItems.stream()
-                .filter(item -> item.getNoteFoodPanda() != null)
-                .collect(Collectors.toMap(OrderItems::getItemId, OrderItems::getNoteFoodPanda));
+                .filter(item -> item.getNoteUberEats() != null)
+                .collect(Collectors.toMap(OrderItems::getItemId, OrderItems::getNoteUberEats));
 
         // Step 2. 正規表達式處理字串，做成一張字串與數量的map
-        Pattern pattern = Pattern.compile("(\\d+) ([^\\[\\],]+)");
-        Matcher matcher = pattern.matcher(orderDtlStr);
-        // 用於追蹤每一種品項的總數
-        HashMap<String, Integer> orderItemCountPanda = new HashMap<>();
-        while (matcher.find()) {
-            int quantity = Integer.parseInt(matcher.group(1));
-            String item = matcher.group(2).trim();
-            orderItemCountPanda.put(item, orderItemCountPanda.getOrDefault(item, 0) + quantity);
+        String[] orderItemCountUber = Arrays.stream(orderDtlStr.split(","))
+                .map(String::trim)
+                .toArray(String[]::new);
+
+        Map<String, Integer> orderItemCountUberMap = new HashMap<>();
+        for (String orderItem : orderItemCountUber) {
+            orderItemCountUberMap.put(orderItem, orderItemCountUberMap.getOrDefault(orderItem, 0) + 1);
         }
 
         // Step 3. 將兩個map整合
@@ -120,7 +120,7 @@ public class UberEatsOrderImporter implements OrderImporter {
             String id = entry.getKey();
             String name = entry.getValue();
 
-            Integer count = orderItemCountPanda.get(name);
+            Integer count = orderItemCountUberMap.get(name);
             if (count != null) {
                 idWithCountMap.put(id, count);
             }
